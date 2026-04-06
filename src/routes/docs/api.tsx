@@ -153,7 +153,7 @@ function ApiPage() {
         {`{\n  "bucket": "my-bucket",\n  "prefix": "images/",\n  "delimiter": "/",\n  "maxKeys": 1000,\n  "isTruncated": false,\n  "contents": [\n    {\n      "key": "images/photo.jpg",\n      "size": 2048576,\n      "lastModified": "2025-01-15T10:30:00Z",\n      "etag": "d41d8cd98f00b204e9800998ecf8427e"\n    }\n  ],\n  "commonPrefixes": ["images/thumbnails/"]\n}`}
       </CodeBlock>
 
-      <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+      {/* <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Additional Resources
       </h2>
       <ul className="list-disc list-inside space-y-2 text-muted-foreground">
@@ -178,7 +178,7 @@ function ApiPage() {
         <li>
           Security: <code className="text-primary">docs/SECURITY.md</code>
         </li>
-      </ul>
+      </ul> */}
     </DocPage>
   );
 }
