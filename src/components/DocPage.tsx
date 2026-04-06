@@ -74,10 +74,15 @@ const sidebarLinks = [
     { to: "/docs/installation", label: "Installation" },
     { to: "/docs/quickstart", label: "Quick Start" },
     { to: "/docs/configuration", label: "Configuration" },
-    { to: "/docs/api", label: "API Reference" },
+    { to: "/docs/authentication", label: "Authentication" },
+    { to: "/docs/file-api", label: "File Management API" },
+    { to: "/docs/api", label: "S3-Compatible API" },
+    { to: "/docs/presigned-urls", label: "Presigned URLs" },
     { to: "/docs/shares", label: "Shareable Links" },
+    { to: "/docs/monitoring", label: "Health & Monitoring" },
     { to: "/docs/docker", label: "Docker & Deployment" },
-    { to: "/docs/monitoring", label: "Monitoring" },
+    { to: "/docs/error-codes", label: "Error Codes" },
+    { to: "/docs/typescript-guide", label: "TypeScript Guide" },
     { to: "/docs/architecture", label: "Architecture" },
 ];
 

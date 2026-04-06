@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
     Download, Shield, Terminal, Container, BarChart3, Share2,
-    Key, FolderTree, ArrowRight, BookOpen, Server
+    Key, FolderTree, ArrowRight, BookOpen, Lock, FileText,
+    Link2, AlertTriangle, Code
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -34,32 +35,62 @@ const sections = [
     {
         icon: Shield,
         title: "Configuration",
-        desc: "CLI flags, environment variables, and Docker Compose setup.",
+        desc: "CLI flags, environment variables, rate limiting, and upload limits.",
         to: "/docs/configuration",
     },
     {
+        icon: Lock,
+        title: "Authentication",
+        desc: "Password auth (JWT), API key auth (HMAC-SHA256), and public routes.",
+        to: "/docs/authentication",
+    },
+    {
+        icon: FileText,
+        title: "File Management API",
+        desc: "Upload, download, move, copy, rename, search, star, and trash files.",
+        to: "/docs/file-api",
+    },
+    {
         icon: Key,
-        title: "API Reference",
-        desc: "S3-compatible API with HMAC-SHA256 authentication.",
+        title: "S3-Compatible API",
+        desc: "Bucket/object storage with API key management and HMAC auth.",
         to: "/docs/api",
+    },
+    {
+        icon: Link2,
+        title: "Presigned URLs",
+        desc: "Client-side HMAC URLs and server-side pretty URLs with revocation.",
+        to: "/docs/presigned-urls",
     },
     {
         icon: Share2,
         title: "Shareable Links",
-        desc: "Create password-protected shareable links with expiry.",
+        desc: "Generate unique URLs with optional password protection and expiry.",
         to: "/docs/shares",
+    },
+    {
+        icon: BarChart3,
+        title: "Health & Monitoring",
+        desc: "Health probes, stats, WebSocket, logs, and Prometheus metrics.",
+        to: "/docs/monitoring",
     },
     {
         icon: Container,
         title: "Docker & Deployment",
-        desc: "Docker, Docker Compose, Caddy reverse proxy, and production tips.",
+        desc: "Docker, Compose, Kubernetes, Caddy reverse proxy, and Grafana.",
         to: "/docs/docker",
     },
     {
-        icon: BarChart3,
-        title: "Monitoring",
-        desc: "Prometheus metrics, Grafana dashboard, and health probes.",
-        to: "/docs/monitoring",
+        icon: AlertTriangle,
+        title: "Error Codes",
+        desc: "Structured error format with categories and HTTP status codes.",
+        to: "/docs/error-codes",
+    },
+    {
+        icon: Code,
+        title: "TypeScript Guide",
+        desc: "Complete TypeScript example covering every API feature end-to-end.",
+        to: "/docs/typescript-guide",
     },
     {
         icon: FolderTree,

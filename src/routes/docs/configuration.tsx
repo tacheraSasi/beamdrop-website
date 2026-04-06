@@ -17,14 +17,18 @@ function ConfigurationPage() {
             <DocTable
                 headers={["Flag", "Description", "Default"]}
                 rows={[
-                    ["-dir", "Directory to share", "Current directory"],
-                    ["-port", "Server port", "Auto-detect"],
-                    ["-p", "Password for web authentication", "None"],
-                    ["-api-auth", "Enable API key authentication", "false"],
-                    ["-tls-cert", "Path to TLS certificate", "None"],
-                    ["-tls-key", "Path to TLS private key", "None"],
-                    ["-allowed-origins", "CORS allowed origins (comma-separated)", "None"],
-                    ["-log-level", "Log level: debug, info, warn, error", "info"],
+                    ["-dir", "Directory to share", ". (current)"],
+                    ["-port", "Server port", "Auto-detect (prefers 7777)"],
+                    ["-p", "Password for web authentication", "None (disabled)"],
+                    ["-api-auth", "Enable API key authentication for S3 API", "false"],
+                    ["-tls-cert", "Path to TLS certificate file", "None"],
+                    ["-tls-key", "Path to TLS private key file", "None"],
+                    ["-allowed-origins", "Comma-separated CORS origins", "None (CORS disabled)"],
+                    ["-db-path", "Path to database file or directory", "~/.beamdrop/beamdrop.db"],
+                    ["-rate-limit", "Requests/min per IP (0 = disabled)", "100"],
+                    ["-log-level", "debug, info, warn, error", "info"],
+                    ["-qr", "Enable QR code display", "false"],
+                    ["-shutdown-timeout", "Graceful shutdown timeout", "30s"],
                     ["-v", "Show version", "-"],
                     ["-h", "Show help", "-"],
                 ]}
@@ -36,16 +40,33 @@ function ConfigurationPage() {
             <DocTable
                 headers={["Variable", "Default", "Description"]}
                 rows={[
-                    ["BEAMDROP_PORT", "7777", "Port to listen on"],
-                    ["BEAMDROP_PASSWORD", "(none)", "Enable password authentication"],
-                    ["BEAMDROP_LOG_LEVEL", "info", "Log level: debug, info, warn, error"],
-                    ["BEAMDROP_RATE_LIMIT", "100", "Requests/min per IP (0 = disabled)"],
-                    ["BEAMDROP_API_AUTH", "(off)", "Set to true to enable S3 API key auth"],
-                    ["BEAMDROP_ALLOWED_ORIGINS", "(none)", "Comma-separated CORS origins"],
-                    ["BEAMDROP_TLS_CERT", "(none)", "Path to TLS certificate (inside container)"],
-                    ["BEAMDROP_TLS_KEY", "(none)", "Path to TLS private key (inside container)"],
+                    ["BEAMDROP_PORT", "7777", "Server port"],
+                    ["BEAMDROP_PASSWORD", "(none)", "Enable password auth"],
+                    ["BEAMDROP_LOG_LEVEL", "info", "Log level"],
+                    ["BEAMDROP_RATE_LIMIT", "100", "Requests/min per IP"],
+                    ["BEAMDROP_API_AUTH", "false", "Enable S3 API key auth"],
+                    ["BEAMDROP_QR", "false", "Enable QR code display"],
+                    ["BEAMDROP_ALLOWED_ORIGINS", "(none)", "CORS origins"],
+                    ["BEAMDROP_DB_PATH", "(none)", "Path to database file or directory"],
+                    ["BEAMDROP_TLS_CERT", "(none)", "TLS certificate path"],
+                    ["BEAMDROP_TLS_KEY", "(none)", "TLS private key path"],
                 ]}
             />
+
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Quick Start Examples
+            </h2>
+            <CodeBlock title="CLI examples">
+                {`# Share current directory\nbeamdrop\n\n# Share a specific directory with password\nbeamdrop -dir /path/to/share -p mysecretpassword\n\n# Enable S3 API with auth\nbeamdrop -dir /path/to/share -api-auth\n\n# Full production setup\nbeamdrop -dir /data -p secret -api-auth -tls-cert cert.pem -tls-key key.pem -rate-limit 200`}
+            </CodeBlock>
+
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Upload Limits
+            </h2>
+            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                <li><strong>Max file size:</strong> 100 MB</li>
+                <li><strong>Allowed MIME types:</strong> Images, documents, archives, audio, video, code, and <code className="text-primary">application/octet-stream</code></li>
+            </ul>
 
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 Security Features
