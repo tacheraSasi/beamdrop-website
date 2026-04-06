@@ -11,12 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsTypescriptGuideRouteImport } from './routes/docs/typescript-guide'
 import { Route as DocsSharesRouteImport } from './routes/docs/shares'
 import { Route as DocsQuickstartRouteImport } from './routes/docs/quickstart'
+import { Route as DocsPresignedUrlsRouteImport } from './routes/docs/presigned-urls'
 import { Route as DocsMonitoringRouteImport } from './routes/docs/monitoring'
 import { Route as DocsInstallationRouteImport } from './routes/docs/installation'
+import { Route as DocsFileApiRouteImport } from './routes/docs/file-api'
+import { Route as DocsErrorCodesRouteImport } from './routes/docs/error-codes'
 import { Route as DocsDockerRouteImport } from './routes/docs/docker'
 import { Route as DocsConfigurationRouteImport } from './routes/docs/configuration'
+import { Route as DocsAuthenticationRouteImport } from './routes/docs/authentication'
 import { Route as DocsArchitectureRouteImport } from './routes/docs/architecture'
 import { Route as DocsApiRouteImport } from './routes/docs/api'
 
@@ -30,6 +35,11 @@ const DocsIndexRoute = DocsIndexRouteImport.update({
   path: '/docs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsTypescriptGuideRoute = DocsTypescriptGuideRouteImport.update({
+  id: '/docs/typescript-guide',
+  path: '/docs/typescript-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsSharesRoute = DocsSharesRouteImport.update({
   id: '/docs/shares',
   path: '/docs/shares',
@@ -38,6 +48,11 @@ const DocsSharesRoute = DocsSharesRouteImport.update({
 const DocsQuickstartRoute = DocsQuickstartRouteImport.update({
   id: '/docs/quickstart',
   path: '/docs/quickstart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsPresignedUrlsRoute = DocsPresignedUrlsRouteImport.update({
+  id: '/docs/presigned-urls',
+  path: '/docs/presigned-urls',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsMonitoringRoute = DocsMonitoringRouteImport.update({
@@ -50,6 +65,16 @@ const DocsInstallationRoute = DocsInstallationRouteImport.update({
   path: '/docs/installation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsFileApiRoute = DocsFileApiRouteImport.update({
+  id: '/docs/file-api',
+  path: '/docs/file-api',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsErrorCodesRoute = DocsErrorCodesRouteImport.update({
+  id: '/docs/error-codes',
+  path: '/docs/error-codes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsDockerRoute = DocsDockerRouteImport.update({
   id: '/docs/docker',
   path: '/docs/docker',
@@ -58,6 +83,11 @@ const DocsDockerRoute = DocsDockerRouteImport.update({
 const DocsConfigurationRoute = DocsConfigurationRouteImport.update({
   id: '/docs/configuration',
   path: '/docs/configuration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsAuthenticationRoute = DocsAuthenticationRouteImport.update({
+  id: '/docs/authentication',
+  path: '/docs/authentication',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsArchitectureRoute = DocsArchitectureRouteImport.update({
@@ -75,24 +105,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/architecture': typeof DocsArchitectureRoute
+  '/docs/authentication': typeof DocsAuthenticationRoute
   '/docs/configuration': typeof DocsConfigurationRoute
   '/docs/docker': typeof DocsDockerRoute
+  '/docs/error-codes': typeof DocsErrorCodesRoute
+  '/docs/file-api': typeof DocsFileApiRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/monitoring': typeof DocsMonitoringRoute
+  '/docs/presigned-urls': typeof DocsPresignedUrlsRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs/shares': typeof DocsSharesRoute
+  '/docs/typescript-guide': typeof DocsTypescriptGuideRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/architecture': typeof DocsArchitectureRoute
+  '/docs/authentication': typeof DocsAuthenticationRoute
   '/docs/configuration': typeof DocsConfigurationRoute
   '/docs/docker': typeof DocsDockerRoute
+  '/docs/error-codes': typeof DocsErrorCodesRoute
+  '/docs/file-api': typeof DocsFileApiRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/monitoring': typeof DocsMonitoringRoute
+  '/docs/presigned-urls': typeof DocsPresignedUrlsRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs/shares': typeof DocsSharesRoute
+  '/docs/typescript-guide': typeof DocsTypescriptGuideRoute
   '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
@@ -100,12 +140,17 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/architecture': typeof DocsArchitectureRoute
+  '/docs/authentication': typeof DocsAuthenticationRoute
   '/docs/configuration': typeof DocsConfigurationRoute
   '/docs/docker': typeof DocsDockerRoute
+  '/docs/error-codes': typeof DocsErrorCodesRoute
+  '/docs/file-api': typeof DocsFileApiRoute
   '/docs/installation': typeof DocsInstallationRoute
   '/docs/monitoring': typeof DocsMonitoringRoute
+  '/docs/presigned-urls': typeof DocsPresignedUrlsRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs/shares': typeof DocsSharesRoute
+  '/docs/typescript-guide': typeof DocsTypescriptGuideRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
@@ -114,36 +159,51 @@ export interface FileRouteTypes {
     | '/'
     | '/docs/api'
     | '/docs/architecture'
+    | '/docs/authentication'
     | '/docs/configuration'
     | '/docs/docker'
+    | '/docs/error-codes'
+    | '/docs/file-api'
     | '/docs/installation'
     | '/docs/monitoring'
+    | '/docs/presigned-urls'
     | '/docs/quickstart'
     | '/docs/shares'
+    | '/docs/typescript-guide'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/docs/api'
     | '/docs/architecture'
+    | '/docs/authentication'
     | '/docs/configuration'
     | '/docs/docker'
+    | '/docs/error-codes'
+    | '/docs/file-api'
     | '/docs/installation'
     | '/docs/monitoring'
+    | '/docs/presigned-urls'
     | '/docs/quickstart'
     | '/docs/shares'
+    | '/docs/typescript-guide'
     | '/docs'
   id:
     | '__root__'
     | '/'
     | '/docs/api'
     | '/docs/architecture'
+    | '/docs/authentication'
     | '/docs/configuration'
     | '/docs/docker'
+    | '/docs/error-codes'
+    | '/docs/file-api'
     | '/docs/installation'
     | '/docs/monitoring'
+    | '/docs/presigned-urls'
     | '/docs/quickstart'
     | '/docs/shares'
+    | '/docs/typescript-guide'
     | '/docs/'
   fileRoutesById: FileRoutesById
 }
@@ -151,12 +211,17 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsApiRoute: typeof DocsApiRoute
   DocsArchitectureRoute: typeof DocsArchitectureRoute
+  DocsAuthenticationRoute: typeof DocsAuthenticationRoute
   DocsConfigurationRoute: typeof DocsConfigurationRoute
   DocsDockerRoute: typeof DocsDockerRoute
+  DocsErrorCodesRoute: typeof DocsErrorCodesRoute
+  DocsFileApiRoute: typeof DocsFileApiRoute
   DocsInstallationRoute: typeof DocsInstallationRoute
   DocsMonitoringRoute: typeof DocsMonitoringRoute
+  DocsPresignedUrlsRoute: typeof DocsPresignedUrlsRoute
   DocsQuickstartRoute: typeof DocsQuickstartRoute
   DocsSharesRoute: typeof DocsSharesRoute
+  DocsTypescriptGuideRoute: typeof DocsTypescriptGuideRoute
   DocsIndexRoute: typeof DocsIndexRoute
 }
 
@@ -176,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/typescript-guide': {
+      id: '/docs/typescript-guide'
+      path: '/docs/typescript-guide'
+      fullPath: '/docs/typescript-guide'
+      preLoaderRoute: typeof DocsTypescriptGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/shares': {
       id: '/docs/shares'
       path: '/docs/shares'
@@ -188,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/docs/quickstart'
       fullPath: '/docs/quickstart'
       preLoaderRoute: typeof DocsQuickstartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/presigned-urls': {
+      id: '/docs/presigned-urls'
+      path: '/docs/presigned-urls'
+      fullPath: '/docs/presigned-urls'
+      preLoaderRoute: typeof DocsPresignedUrlsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/monitoring': {
@@ -204,6 +283,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsInstallationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/file-api': {
+      id: '/docs/file-api'
+      path: '/docs/file-api'
+      fullPath: '/docs/file-api'
+      preLoaderRoute: typeof DocsFileApiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/error-codes': {
+      id: '/docs/error-codes'
+      path: '/docs/error-codes'
+      fullPath: '/docs/error-codes'
+      preLoaderRoute: typeof DocsErrorCodesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/docker': {
       id: '/docs/docker'
       path: '/docs/docker'
@@ -216,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/docs/configuration'
       fullPath: '/docs/configuration'
       preLoaderRoute: typeof DocsConfigurationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/authentication': {
+      id: '/docs/authentication'
+      path: '/docs/authentication'
+      fullPath: '/docs/authentication'
+      preLoaderRoute: typeof DocsAuthenticationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/architecture': {
@@ -239,12 +339,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsApiRoute: DocsApiRoute,
   DocsArchitectureRoute: DocsArchitectureRoute,
+  DocsAuthenticationRoute: DocsAuthenticationRoute,
   DocsConfigurationRoute: DocsConfigurationRoute,
   DocsDockerRoute: DocsDockerRoute,
+  DocsErrorCodesRoute: DocsErrorCodesRoute,
+  DocsFileApiRoute: DocsFileApiRoute,
   DocsInstallationRoute: DocsInstallationRoute,
   DocsMonitoringRoute: DocsMonitoringRoute,
+  DocsPresignedUrlsRoute: DocsPresignedUrlsRoute,
   DocsQuickstartRoute: DocsQuickstartRoute,
   DocsSharesRoute: DocsSharesRoute,
+  DocsTypescriptGuideRoute: DocsTypescriptGuideRoute,
   DocsIndexRoute: DocsIndexRoute,
 }
 export const routeTree = rootRouteImport
