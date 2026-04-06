@@ -8,38 +8,70 @@ export const Route = createFileRoute("/docs/monitoring")({
 function MonitoringPage() {
     return (
         <DocPage
-            title="Monitoring"
-            description="Prometheus metrics, Grafana dashboard, and Kubernetes-compatible health probes."
+            title="Health & Monitoring"
+            description="Kubernetes-compatible health probes, Prometheus metrics, real-time stats, WebSocket events, and structured logs."
         >
+            {/* Health Endpoints */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
-                Health Probes
+                Health Endpoints
             </h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-                Kubernetes-compatible health endpoints with component-level status:
-            </p>
             <DocTable
-                headers={["Endpoint", "Description"]}
+                headers={["Endpoint", "Purpose", "Use Case"]}
                 rows={[
-                    ["/health/live", "Liveness probe — is the process alive?"],
-                    ["/health/ready", "Readiness probe — is the server ready to accept traffic?"],
-                    ["/health/startup", "Startup probe — has the server finished initializing?"],
+                    ["/health", "Full health + component status", "Monitoring dashboard"],
+                    ["/health/live", "Liveness probe", "Kubernetes liveness"],
+                    ["/health/ready", "Readiness probe", "Kubernetes readiness"],
+                    ["/health/startup", "Startup probe", "Kubernetes startup"],
+                    ["/ready", "Legacy readiness probe", "Load balancer health check"],
                 ]}
             />
+            <CodeBlock title="Full health response">
+                {`GET /health\n\n{\n  "status": "healthy",\n  "version": "1.0.0",\n  "uptime": "2h30m15s",\n  "components": {\n    "storage": "healthy",\n    "database": "healthy",\n    "server": "healthy"\n  }\n}`}
+            </CodeBlock>
 
+            {/* Stats */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Stats Endpoint
+            </h2>
+            <CodeBlock title="GET /stats">
+                {`GET /stats\n\n{\n  "totalFiles": 1234,\n  "totalSize": "1.2 GB",\n  "totalSizeBytes": 1288490188,\n  "storageUsed": "45%",\n  "uptime": "2h30m15s",\n  "version": "1.0.0"\n}`}
+            </CodeBlock>
+
+            {/* WebSocket */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Real-Time Stats (WebSocket)
+            </h2>
+            <CodeBlock title="wscat">
+                {`wscat -c ws://localhost:7777/ws/stats\n\n# Receives periodic updates:\n{\n  "totalFiles": 1234,\n  "totalSize": "1.2 GB",\n  "connections": 5,\n  "cpuUsage": "12.5%",\n  "memoryUsage": "256 MB",\n  "goroutines": 42\n}`}
+            </CodeBlock>
+
+            {/* Logs */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Logs Endpoint
+            </h2>
+            <DocTable
+                headers={["Parameter", "Type", "Default", "Description"]}
+                rows={[
+                    ["limit", "number", "100", "Max entries to return"],
+                    ["offset", "number", "0", "Pagination offset"],
+                    ["level", "string", "all", "Filter by level (info, warn, error)"],
+                    ["search", "string", "—", "Search in log messages"],
+                ]}
+            />
+            <CodeBlock title="GET /api/logs">
+                {`GET /api/logs?limit=50&level=error\n\n{\n  "logs": [\n    {\n      "timestamp": "2025-01-15T10:30:00Z",\n      "level": "error",\n      "message": "Failed to write file",\n      "details": { "path": "uploads/large.bin", "error": "disk full" }\n    }\n  ],\n  "total": 1,\n  "hasMore": false\n}`}
+            </CodeBlock>
+
+            {/* Prometheus Metrics */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 Prometheus Metrics
             </h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
                 BeamDrop exposes a <code className="text-primary">/metrics</code> endpoint in Prometheus text format.
-                Add it as a scrape target:
             </p>
             <CodeBlock title="prometheus.yml">
                 {`scrape_configs:\n  - job_name: beamdrop\n    static_configs:\n      - targets: ["localhost:7777"]`}
             </CodeBlock>
-
-            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
-                Exported Metrics
-            </h2>
             <DocTable
                 headers={["Metric", "Type", "Description"]}
                 rows={[
@@ -58,6 +90,7 @@ function MonitoringPage() {
                 ]}
             />
 
+            {/* Grafana */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 Grafana Dashboard
             </h2>

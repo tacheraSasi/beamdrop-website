@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DocPage, CodeBlock } from "@/components/DocPage";
+import { DocPage, CodeBlock, DocTable } from "@/components/DocPage";
 
 export const Route = createFileRoute("/docs/api")({
     component: ApiPage,
@@ -8,77 +8,148 @@ export const Route = createFileRoute("/docs/api")({
 function ApiPage() {
     return (
         <DocPage
-            title="API Reference"
-            description="S3-compatible API with HMAC-SHA256 signed authentication."
+            title="S3-Compatible API"
+            description="Bucket/object storage with API key management and HMAC-SHA256 signed authentication."
         >
+            {/* API Key Management */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
-                Creating an API Key
+                API Key Management
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-                Via the web interface: navigate to <strong>API Keys</strong> in the sidebar, click
-                "Create New Key", and save the secret key (shown only once).
+                API keys are managed via <code className="text-primary">/api/v1/keys</code>. These endpoints use <strong>session auth</strong> (cookies from the web UI login), not API key auth.
             </p>
-            <CodeBlock title="Via API">
-                {`curl -X POST http://localhost:8080/api/v1/keys \\\n  -H "Content-Type: application/json" \\\n  -d '{"name": "My App", "expiresIn": 2592000}'`}
-            </CodeBlock>
 
-            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
-                Authentication
-            </h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-                All API requests require HMAC-SHA256 signed authentication:
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Create API Key
+            </h3>
+            <CodeBlock title="POST /api/v1/keys">
+                {`POST /api/v1/keys\nContent-Type: application/json\n\n{\n  "name": "My CI Pipeline",\n  "permissions": "read,write",\n  "bucketScope": "my-bucket",\n  "expiresIn": 2592000\n}`}
+            </CodeBlock>
+            <DocTable
+                headers={["Field", "Type", "Required", "Description"]}
+                rows={[
+                    ["name", "string", "Yes", "Human-readable name"],
+                    ["permissions", "string", "No", "Comma-separated permissions"],
+                    ["bucketScope", "string", "No", "Restrict key to a specific bucket"],
+                    ["expiresIn", "number", "No", "Expiry in seconds (null = never)"],
+                ]}
+            />
+            <CodeBlock title="Response (201)">
+                {`{\n  "id": 1,\n  "name": "My CI Pipeline",\n  "accessKeyId": "BDK_a1b2c3d4e5f67890",\n  "secretKey": "sk_1234567890abcdef1234567890abcdef12345678",\n  "permissions": "read,write",\n  "bucketScope": "my-bucket",\n  "expiresAt": "2025-02-14T10:30:00Z",\n  "createdAt": "2025-01-15T10:30:00Z",\n  "warning": "Save the secret key now. It cannot be retrieved later."\n}`}
+            </CodeBlock>
+            <p className="text-sm text-muted-foreground mt-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                <strong>Important:</strong> The <code className="text-primary">secretKey</code> is shown <strong>only once</strong>. Store it securely.
             </p>
-            <CodeBlock title="Generate signature">
-                {`TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")\nSTRING_TO_SIGN="GET\\n/api/v1/buckets\\n\${TIMESTAMP}"\nSIGNATURE=$(echo -n "$STRING_TO_SIGN" | openssl dgst -sha256 -hmac "$SECRET_KEY" -binary | base64)\n\n# Make request\ncurl http://localhost:8080/api/v1/buckets \\\n  -H "Authorization: Bearer \${ACCESS_KEY}:\${SIGNATURE}" \\\n  -H "X-Beamdrop-Date: \${TIMESTAMP}"`}
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                List API Keys
+            </h3>
+            <CodeBlock title="GET /api/v1/keys">
+                {`GET /api/v1/keys\n\n# Response:\n{\n  "keys": [\n    {\n      "id": 1,\n      "name": "My CI Pipeline",\n      "accessKeyId": "BDK_a1b2c3d4e5f67890",\n      "permissions": "read,write",\n      "bucketScope": "my-bucket",\n      "expiresAt": "2025-02-14T10:30:00Z",\n      "lastUsedAt": "2025-01-20T09:15:00Z",\n      "createdAt": "2025-01-15T10:30:00Z",\n      "disabled": false\n    }\n  ],\n  "count": 1\n}`}
             </CodeBlock>
 
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Delete API Key
+            </h3>
+            <CodeBlock title="DELETE /api/v1/keys">
+                {`DELETE /api/v1/keys?accessKeyId=BDK_a1b2c3d4e5f67890\n\n# Response: 204 No Content`}
+            </CodeBlock>
+
+            {/* Bucket Operations */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
-                Example Operations
+                Bucket Operations
             </h2>
-            <CodeBlock title="Create bucket">
-                {`curl -X PUT http://localhost:8080/api/v1/buckets/my-bucket \\\n  -H "Authorization: Bearer \${ACCESS_KEY}:\${SIGNATURE}" \\\n  -H "X-Beamdrop-Date: \${TIMESTAMP}"`}
+            <p className="text-sm text-muted-foreground mb-4">
+                All bucket endpoints require API key auth when <code className="text-primary">-api-auth</code> is enabled.
+            </p>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                List Buckets
+            </h3>
+            <CodeBlock title="GET /api/v1/buckets">
+                {`GET /api/v1/buckets\n\n# Response:\n{\n  "buckets": [\n    { "name": "my-bucket", "createdAt": "2025-01-15T10:30:00Z" }\n  ],\n  "count": 1\n}`}
             </CodeBlock>
 
-            <CodeBlock title="Upload file">
-                {`curl -X PUT http://localhost:8080/api/v1/buckets/my-bucket/path/to/file.txt \\\n  -H "Authorization: Bearer \${ACCESS_KEY}:\${SIGNATURE}" \\\n  -H "X-Beamdrop-Date: \${TIMESTAMP}" \\\n  -H "Content-Type: text/plain" \\\n  -d "Hello, World!"`}
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Create Bucket
+            </h3>
+            <CodeBlock title="PUT /api/v1/buckets/{name}">
+                {`PUT /api/v1/buckets/my-bucket\n\n# Response (201):\n{\n  "bucket": "my-bucket",\n  "created": "2025-01-15T10:30:00Z",\n  "location": "/api/v1/buckets/my-bucket"\n}\n\n# Idempotent create:\nPUT /api/v1/buckets/my-bucket?createIfNotExists=true`}
+            </CodeBlock>
+            <p className="text-sm text-muted-foreground">
+                <strong>Naming rules (S3-compatible):</strong> 3–63 chars, lowercase letters/numbers/hyphens/dots, must start and end with letter or number, cannot be an IP address format.
+            </p>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Check / Get / Delete Bucket
+            </h3>
+            <CodeBlock title="Bucket operations">
+                {`# Check bucket exists\nHEAD /api/v1/buckets/my-bucket\n# Response: 200 OK or 404 Not Found\n\n# Get bucket info\nGET /api/v1/buckets/my-bucket\n# Response: { "bucket": "my-bucket", "exists": true }\n\n# Delete bucket (must be empty)\nDELETE /api/v1/buckets/my-bucket\n# Response: 204 No Content\n# Error: 409 BUCKET_NOT_EMPTY`}
             </CodeBlock>
 
-            <CodeBlock title="Download file">
-                {`curl http://localhost:8080/api/v1/buckets/my-bucket/path/to/file.txt \\\n  -H "Authorization: Bearer \${ACCESS_KEY}:\${SIGNATURE}" \\\n  -H "X-Beamdrop-Date: \${TIMESTAMP}"`}
+            {/* Object Operations */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Object Operations
+            </h2>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Upload Object
+            </h3>
+            <CodeBlock title="PUT (raw body)">
+                {`PUT /api/v1/buckets/my-bucket/images/photo.jpg\nContent-Type: image/jpeg\n\n<raw file content>\n\n# Response:\n{\n  "bucket": "my-bucket",\n  "key": "images/photo.jpg",\n  "etag": "d41d8cd98f00b204e9800998ecf8427e",\n  "size": 2048576,\n  "url": "/api/v1/buckets/my-bucket/images/photo.jpg"\n}`}
+            </CodeBlock>
+            <CodeBlock title="POST (multipart)">
+                {`POST /api/v1/buckets/my-bucket/uploads/data.csv\nContent-Type: multipart/form-data\n\n# Form field: file = <file content>`}
             </CodeBlock>
 
-            <CodeBlock title="List objects">
-                {`curl "http://localhost:8080/api/v1/buckets/my-bucket?list&prefix=path/" \\\n  -H "Authorization: Bearer \${ACCESS_KEY}:\${SIGNATURE}" \\\n  -H "X-Beamdrop-Date: \${TIMESTAMP}"`}
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Download Object
+            </h3>
+            <CodeBlock title="GET /api/v1/buckets/{bucket}/{key}">
+                {`GET /api/v1/buckets/my-bucket/images/photo.jpg\n\n# Response headers:\n# Content-Length, Content-Type, Last-Modified, ETag\n# Supports HTTP Range requests for partial downloads`}
+            </CodeBlock>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Get Object Metadata
+            </h3>
+            <CodeBlock title="HEAD /api/v1/buckets/{bucket}/{key}">
+                {`HEAD /api/v1/buckets/my-bucket/images/photo.jpg\n\n# Returns: Content-Length, Content-Type, Last-Modified, ETag (no body)`}
+            </CodeBlock>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Delete Object
+            </h3>
+            <CodeBlock title="DELETE">
+                {`DELETE /api/v1/buckets/my-bucket/images/photo.jpg\n\n# Response: 204 No Content`}
+            </CodeBlock>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                List Objects
+            </h3>
+            <CodeBlock title="GET /api/v1/buckets/{bucket}">
+                {`GET /api/v1/buckets/my-bucket?prefix=images/&delimiter=/&max-keys=1000`}
+            </CodeBlock>
+            <DocTable
+                headers={["Parameter", "Default", "Description"]}
+                rows={[
+                    ["prefix", "(none)", "Filter objects by key prefix"],
+                    ["delimiter", "(none)", "Group keys by delimiter (e.g., / for virtual dirs)"],
+                    ["max-keys", "1000", "Maximum objects to return (max 1000)"],
+                ]}
+            />
+            <CodeBlock title="Response">
+                {`{\n  "bucket": "my-bucket",\n  "prefix": "images/",\n  "delimiter": "/",\n  "maxKeys": 1000,\n  "isTruncated": false,\n  "contents": [\n    {\n      "key": "images/photo.jpg",\n      "size": 2048576,\n      "lastModified": "2025-01-15T10:30:00Z",\n      "etag": "d41d8cd98f00b204e9800998ecf8427e"\n    }\n  ],\n  "commonPrefixes": ["images/thumbnails/"]\n}`}
             </CodeBlock>
 
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 Additional Resources
             </h2>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>
-                    OpenAPI Specification:{" "}
-                    <code className="text-primary">docs/openapi.yaml</code>
-                </li>
-                <li>
-                    Postman Collection:{" "}
-                    <code className="text-primary">docs/beamdrop-api.postman_collection.json</code>
-                </li>
-                <li>
-                    Postman Environment:{" "}
-                    <code className="text-primary">docs/beamdrop-api.postman_environment.json</code>
-                </li>
-                <li>
-                    Postman Guide:{" "}
-                    <code className="text-primary">docs/POSTMAN-GUIDE.md</code>
-                </li>
-                <li>
-                    API Design:{" "}
-                    <code className="text-primary">docs/s3-api-design.md</code>
-                </li>
-                <li>
-                    Security:{" "}
-                    <code className="text-primary">docs/SECURITY.md</code>
-                </li>
+                <li>OpenAPI Specification: <code className="text-primary">docs/openapi.yaml</code></li>
+                <li>Postman Collection: <code className="text-primary">docs/beamdrop-api.postman_collection.json</code></li>
+                <li>Postman Guide: <code className="text-primary">docs/POSTMAN-GUIDE.md</code></li>
+                <li>API Design: <code className="text-primary">docs/s3-api-design.md</code></li>
+                <li>Security: <code className="text-primary">docs/SECURITY.md</code></li>
             </ul>
         </DocPage>
     );

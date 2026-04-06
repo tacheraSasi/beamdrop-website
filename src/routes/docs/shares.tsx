@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DocPage, CodeBlock } from "@/components/DocPage";
+import { DocPage, CodeBlock, DocTable } from "@/components/DocPage";
 
 export const Route = createFileRoute("/docs/shares")({
     component: SharesPage,
@@ -9,34 +9,79 @@ function SharesPage() {
     return (
         <DocPage
             title="Shareable Links"
-            description="Create password-protected shareable links for files and folders."
+            description="Share files and folders via unique URLs with optional password protection and expiry. They bypass normal authentication."
         >
+            {/* Create Link */}
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
-                Creating a Shareable Link
+                Create Link
+            </h2>
+            <CodeBlock title="POST /api/shares">
+                {`POST /api/shares\nContent-Type: application/json\n\n{\n  "path": "documents/report.pdf",\n  "password": "optional-password",\n  "expiresIn": 86400\n}`}
+            </CodeBlock>
+            <DocTable
+                headers={["Field", "Type", "Required", "Description"]}
+                rows={[
+                    ["path", "string", "Yes", "Path to the file or folder"],
+                    ["password", "string", "No", "Password-protect the link"],
+                    ["expiresIn", "number", "No", "Expiry in seconds"],
+                ]}
+            />
+            <CodeBlock title="Response (201)">
+                {`{\n  "token": "abc123def456",\n  "url": "http://localhost:7777/share/abc123def456",\n  "path": "documents/report.pdf",\n  "expiresAt": "2025-01-16T10:30:00Z",\n  "createdAt": "2025-01-15T10:30:00Z"\n}`}
+            </CodeBlock>
+
+            {/* List Links */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                List Links
+            </h2>
+            <CodeBlock title="GET /api/shares/list">
+                {`GET /api/shares/list\n\n# Response:\n[\n  {\n    "id": 1,\n    "path": "documents/report.pdf",\n    "token": "abc123def456",\n    "hasPassword": true,\n    "expiresAt": "2025-01-16T10:30:00Z",\n    "accessCount": 5,\n    "createdAt": "2025-01-15T10:30:00Z"\n  }\n]`}
+            </CodeBlock>
+
+            {/* Delete Link */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Delete Link
+            </h2>
+            <CodeBlock title="DELETE /api/shares/delete">
+                {`DELETE /api/shares/delete?token=abc123def456\n\n# Response:\n{ "message": "Shareable link deleted successfully" }`}
+            </CodeBlock>
+
+            {/* Access Link */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Access Link
+            </h2>
+            <p className="text-sm text-muted-foreground mb-3">
+                Public endpoint — no authentication required (but may require link password).
+            </p>
+            <CodeBlock title="GET /api/shares/access/{token}">
+                {`# If password-protected (no password provided):\n{\n  "requiresPassword": true,\n  "path": "documents/report.pdf"\n}\n\n# Provide password via POST or query parameter:\nGET /api/shares/access/{token}?password=my-password\n\n# or\nPOST /api/shares/access/{token}\nContent-Type: application/json\n{ "password": "my-password" }`}
+            </CodeBlock>
+
+            <CodeBlock title="File response">
+                {`{\n  "path": "documents/report.pdf",\n  "name": "report.pdf",\n  "size": "1.2 MB",\n  "sizeBytes": 1258291,\n  "contentType": "application/pdf",\n  "isDir": false,\n  "isFile": true\n}`}
+            </CodeBlock>
+
+            <CodeBlock title="Directory response">
+                {`{\n  "path": "documents",\n  "files": [...],\n  "isDir": true\n}`}
+            </CodeBlock>
+
+            <h3 className="text-base font-bold font-mono uppercase tracking-tight mt-6 mb-2">
+                Download & Preview Modes
+            </h3>
+            <CodeBlock>
+                {`# Download mode:\nGET /api/shares/access/{token}?mode=download\n\n# Inline preview mode:\nGET /api/shares/access/{token}?mode=inline`}
+            </CodeBlock>
+
+            {/* Web UI */}
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
+                Using the Web UI
             </h2>
             <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>Navigate to the file browser</li>
-                <li>Right-click on a file or folder and select "Share Link" from the context menu</li>
-                <li>
-                    Configure optional settings:
-                    <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
-                        <li><strong>Password</strong>: Protect the link with a password</li>
-                        <li><strong>Expiry</strong>: Set when the link should expire (in hours)</li>
-                    </ul>
-                </li>
-                <li>Click "Generate Link" to create the shareable URL</li>
-                <li>Copy the link and share it with others</li>
+                <li>Navigate to a file or folder in the browser</li>
+                <li>Right-click and select "Share Link" from the context menu</li>
+                <li>Configure optional password and expiry settings</li>
+                <li>Click "Generate Link" and copy the URL</li>
             </ol>
-
-            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
-                Managing Links
-            </h2>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>View all active shareable links in the "Shares" section of the sidebar</li>
-                <li>See access statistics including view count</li>
-                <li>Delete links when they're no longer needed</li>
-                <li>Links are automatically removed after expiration</li>
-            </ul>
 
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 Security Considerations
@@ -48,13 +93,6 @@ function SharesPage() {
                 <li>Links can be revoked at any time by deleting them</li>
                 <li>Public share links bypass authentication but can still be password-protected</li>
             </ul>
-
-            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
-                API Endpoints
-            </h2>
-            <CodeBlock title="Shares API">
-                {`# Create a new shareable link\ncurl -X POST http://localhost:8080/api/shares \\\n  -H "Content-Type: application/json" \\\n  -d '{"path": "/docs/report.pdf", "password": "secret", "expiresIn": 72}'\n\n# List all shareable links\ncurl http://localhost:8080/api/shares/list\n\n# Delete a shareable link\ncurl -X DELETE "http://localhost:8080/api/shares/delete?token=<token>"\n\n# Public access endpoint (no auth required)\ncurl http://localhost:8080/share/<token>`}
-            </CodeBlock>
         </DocPage>
     );
 }
