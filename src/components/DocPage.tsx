@@ -1,8 +1,9 @@
 import { useState, ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Highlight, themes } from "prism-react-renderer";
 import { Copy, Check, ChevronRight } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { useSeo } from "@/hooks/use-seo";
 
 export const CodeBlock = ({
   children,
@@ -139,6 +140,14 @@ export function DocPage({
   description?: string;
   children: ReactNode;
 }) {
+  const routerState = useRouterState();
+  useSeo({
+    title: `${title} — Docs`,
+    description:
+      description || `${title} documentation for BeamDrop file server.`,
+    path: routerState.location.pathname,
+  });
+
   return (
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto flex gap-8">

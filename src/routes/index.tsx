@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CodeBlock } from "@/components/DocPage";
+import { useSeo } from "@/hooks/use-seo";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -102,6 +103,14 @@ const features = [
 ];
 
 function Landing() {
+  useSeo({
+    title:
+      "BeamDrop — Lightweight Self-Hosted File Server with S3-Compatible API",
+    description:
+      "Fast, lightweight, self-hosted file server with an S3-compatible API built in Go. Single binary, Docker-ready, with shareable links, presigned URLs, and a modern web UI.",
+    path: "/",
+  });
+
   return (
     <div className="overflow-x-hidden">
       {/* Hero */}

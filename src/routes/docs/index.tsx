@@ -18,6 +18,7 @@ import {
   Code,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSeo } from "@/hooks/use-seo";
 
 export const Route = createFileRoute("/docs/")({
   component: DocsIndex,
@@ -114,6 +115,13 @@ const sections = [
 ];
 
 function DocsIndex() {
+  useSeo({
+    title: "Documentation",
+    description:
+      "Complete documentation for BeamDrop — installation, configuration, REST API, S3-compatible API, authentication, Docker deployment, and more.",
+    path: "/docs",
+  });
+
   return (
     <div className="overflow-x-hidden">
       <section className="py-24 px-4">
