@@ -70,7 +70,7 @@ function MonitoringPage() {
         BeamDrop exposes a <code className="text-primary">/metrics</code>{" "}
         endpoint in Prometheus text format.
       </p>
-      <CodeBlock title="prometheus.yml">
+      <CodeBlock title="prometheus.yml" language="yaml">
         {`scrape_configs:\n  - job_name: beamdrop\n    static_configs:\n      - targets: ["localhost:7777"]`}
       </CodeBlock>
       <DocTable

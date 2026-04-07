@@ -33,7 +33,7 @@ function FileApiPage() {
           ],
         ]}
       />
-      <CodeBlock title="Response">
+      <CodeBlock title="Response" language="json">
         {`[\n  {\n    "name": "documents",\n    "isDir": true,\n    "size": "4.0 KB",\n    "modTime": "2025-01-15 10:30:00",\n    "path": "documents",\n    "isStarred": false\n  },\n  {\n    "name": "photo.jpg",\n    "isDir": false,\n    "size": "2.5 MB",\n    "modTime": "2025-01-15 09:00:00",\n    "path": "photo.jpg",\n    "isStarred": true\n  }\n]`}
       </CodeBlock>
       <p className="text-sm text-muted-foreground">
@@ -52,7 +52,7 @@ function FileApiPage() {
         headers={["Field", "Type", "Description"]}
         rows={[["file", "File", "The file to upload (max 100 MB)"]]}
       />
-      <CodeBlock title="Response">
+      <CodeBlock title="Response" language="json">
         {`{\n  "message": "Uploaded",\n  "file": "photo.jpg"\n}`}
       </CodeBlock>
       <p className="text-sm text-muted-foreground">
@@ -143,7 +143,7 @@ function FileApiPage() {
           ["path", "No", "Restrict search to a subdirectory"],
         ]}
       />
-      <CodeBlock title="Response">
+      <CodeBlock title="Response" language="json">
         {`{\n  "query": "report",\n  "path": "",\n  "results": [\n    {\n      "name": "final-report.txt",\n      "isDir": false,\n      "size": "1.2 KB",\n      "modTime": "2025-01-15 10:30:00",\n      "path": "documents/final-report.txt",\n      "isStarred": false\n    }\n  ],\n  "count": 1\n}`}
       </CodeBlock>
 

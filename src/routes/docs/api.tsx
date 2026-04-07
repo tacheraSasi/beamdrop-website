@@ -37,7 +37,7 @@ function ApiPage() {
           ["expiresIn", "number", "No", "Expiry in seconds (null = never)"],
         ]}
       />
-      <CodeBlock title="Response (201)">
+      <CodeBlock title="Response (201)" language="json">
         {`{\n  "id": 1,\n  "name": "My CI Pipeline",\n  "accessKeyId": "BDK_a1b2c3d4e5f67890",\n  "secretKey": "sk_1234567890abcdef1234567890abcdef12345678",\n  "permissions": "read,write",\n  "bucketScope": "my-bucket",\n  "expiresAt": "2025-02-14T10:30:00Z",\n  "createdAt": "2025-01-15T10:30:00Z",\n  "warning": "Save the secret key now. It cannot be retrieved later."\n}`}
       </CodeBlock>
       <p className="text-sm text-muted-foreground mt-2 p-3 rounded-md bg-destructive/10 border border-destructive/20">
@@ -149,7 +149,7 @@ function ApiPage() {
           ["max-keys", "1000", "Maximum objects to return (max 1000)"],
         ]}
       />
-      <CodeBlock title="Response">
+      <CodeBlock title="Response" language="json">
         {`{\n  "bucket": "my-bucket",\n  "prefix": "images/",\n  "delimiter": "/",\n  "maxKeys": 1000,\n  "isTruncated": false,\n  "contents": [\n    {\n      "key": "images/photo.jpg",\n      "size": 2048576,\n      "lastModified": "2025-01-15T10:30:00Z",\n      "etag": "d41d8cd98f00b204e9800998ecf8427e"\n    }\n  ],\n  "commonPrefixes": ["images/thumbnails/"]\n}`}
       </CodeBlock>
 

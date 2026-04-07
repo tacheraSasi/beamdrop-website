@@ -27,7 +27,7 @@ function DockerPage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Docker Compose
       </h2>
-      <CodeBlock title="docker-compose.yml">
+      <CodeBlock title="docker-compose.yml" language="yaml">
         {`version: "3.8"\n\nservices:\n  beamdrop:\n    build: .\n    ports:\n      - "7777:7777"\n    volumes:\n      - beamdrop-data:/data\n    environment:\n      - BEAMDROP_PASSWORD=your-secret\n      - BEAMDROP_API_AUTH=true\n      - BEAMDROP_RATE_LIMIT=100\n    healthcheck:\n      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7777/health/live"]\n      interval: 30s\n      timeout: 5s\n      retries: 3\n    restart: unless-stopped\n\nvolumes:\n  beamdrop-data:`}
       </CodeBlock>
 
@@ -35,7 +35,7 @@ function DockerPage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Kubernetes Probes
       </h2>
-      <CodeBlock title="deployment.yaml (probes section)">
+      <CodeBlock title="deployment.yaml (probes section)" language="yaml">
         {`livenessProbe:\n  httpGet:\n    path: /health/live\n    port: 7777\n  initialDelaySeconds: 5\n  periodSeconds: 10\n\nreadinessProbe:\n  httpGet:\n    path: /health/ready\n    port: 7777\n  initialDelaySeconds: 5\n  periodSeconds: 5\n\nstartupProbe:\n  httpGet:\n    path: /health/startup\n    port: 7777\n  failureThreshold: 30\n  periodSeconds: 2`}
       </CodeBlock>
 
@@ -60,7 +60,7 @@ function DockerPage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Caddy Reverse Proxy
       </h2>
-      <CodeBlock title="Caddyfile">
+      <CodeBlock title="Caddyfile" language="markup">
         {`{$BEAMDROP_DOMAIN:localhost} {\n  reverse_proxy beamdrop:7777\n}`}
       </CodeBlock>
       <ol className="list-decimal list-inside space-y-2 text-muted-foreground mt-3">
@@ -83,7 +83,7 @@ function DockerPage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Prometheus Scrape Config
       </h2>
-      <CodeBlock title="prometheus.yml">
+      <CodeBlock title="prometheus.yml" language="yaml">
         {`scrape_configs:\n  - job_name: beamdrop\n    static_configs:\n      - targets: ["beamdrop:7777"]\n    metrics_path: /metrics\n    scrape_interval: 15s`}
       </CodeBlock>
 

@@ -15,7 +15,7 @@ function ArchitecturePage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
         Storage Structure
       </h2>
-      <CodeBlock title="Storage layout">
+      <CodeBlock title="Storage layout" language="markup">
         {`shared-directory/\n├── buckets/              # S3-compatible bucket storage\n│   ├── my-bucket/\n│   │   ├── images/\n│   │   │   └── photo.jpg\n│   │   └── data.json\n│   └── backups/\n│       └── db.sql\n├── .beamdrop/            # Logs\n│   └── beamdrop.log      # Structured JSON log file\n├── .beamdrop_data/       # Internal data\n│   └── beamdrop.db       # SQLite database (API keys, shares, stars)\n└── .beamdrop_trash/      # Soft-deleted files (recoverable)`}
       </CodeBlock>
 
@@ -110,7 +110,7 @@ function ArchitecturePage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Project Structure
       </h2>
-      <CodeBlock title="Source layout">
+      <CodeBlock title="Source layout" language="markup">
         {`beamdrop/\n├── cmd/beam/           # CLI entry point\n├── beam/server/        # HTTP server and handlers\n├── config/             # Configuration\n├── pkg/\n│   ├── auth/           # Authentication (JWT + API keys)\n│   ├── db/             # SQLite database and models\n│   ├── errors/         # Structured error types\n│   ├── middleware/      # CORS, security headers, rate limiting\n│   ├── storage/        # Bucket/object storage engine\n│   ├── crypto/         # HMAC signature utilities\n│   ├── logger/         # Dual-output structured logging\n│   └── ...\n├── static/frontend/    # React frontend (embedded)\n└── docs/               # Documentation`}
       </CodeBlock>
 

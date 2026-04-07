@@ -15,7 +15,7 @@ function ErrorCodesPage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
         Error Response Format
       </h2>
-      <CodeBlock title="JSON error structure">
+      <CodeBlock title="JSON error structure" language="json">
         {`{\n  "error": "Human-readable message",\n  "code": "MACHINE_READABLE_CODE",\n  "details": { /* optional context */ }\n}`}
       </CodeBlock>
 
@@ -129,7 +129,7 @@ function ErrorCodesPage() {
         ]}
       />
 
-      <CodeBlock title="Rate limit response example">
+      <CodeBlock title="Rate limit response example" language="markup">
         {`HTTP/1.1 429 Too Many Requests\nRetry-After: 60\n\n{\n  "error": "Rate limit exceeded",\n  "code": "RATE_LIMITED",\n  "details": {\n    "retryAfter": 60,\n    "limit": 100\n  }\n}`}
       </CodeBlock>
     </DocPage>

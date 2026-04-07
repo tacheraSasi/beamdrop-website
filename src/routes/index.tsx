@@ -443,7 +443,7 @@ function Landing() {
             variants={fadeUp}
             custom={1}
           >
-            <CodeBlock title="Storage layout">
+            <CodeBlock title="Storage layout" language="markup">
               {`shared-directory/\n├── buckets/              # API-managed storage\n│   ├── my-bucket/\n│   │   ├── images/\n│   │   │   └── photo.jpg\n│   │   └── data.json\n│   └── backups/\n│       └── db.sql\n├── .beamdrop/            # Logs\n│   └── beamdrop.log      # Structured JSON log file\n├── .beamdrop_data/       # Internal database\n└── .beamdrop_trash/      # Deleted files (recoverable)`}
             </CodeBlock>
           </motion.div>

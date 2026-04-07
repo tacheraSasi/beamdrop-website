@@ -26,7 +26,7 @@ function SharesPage() {
           ["expiresIn", "number", "No", "Expiry in seconds"],
         ]}
       />
-      <CodeBlock title="Response (201)">
+      <CodeBlock title="Response (201)" language="json">
         {`{\n  "token": "abc123def456",\n  "url": "http://localhost:7777/share/abc123def456",\n  "path": "documents/report.pdf",\n  "expiresAt": "2025-01-16T10:30:00Z",\n  "createdAt": "2025-01-15T10:30:00Z"\n}`}
       </CodeBlock>
 
@@ -54,15 +54,15 @@ function SharesPage() {
         Public endpoint — no authentication required (but may require link
         password).
       </p>
-      <CodeBlock title="GET /api/shares/access/{token}">
+      <CodeBlock title="GET /api/shares/access/{token}" language="markup">
         {`# If password-protected (no password provided):\n{\n  "requiresPassword": true,\n  "path": "documents/report.pdf"\n}\n\n# Provide password via POST or query parameter:\nGET /api/shares/access/{token}?password=my-password\n\n# or\nPOST /api/shares/access/{token}\nContent-Type: application/json\n{ "password": "my-password" }`}
       </CodeBlock>
 
-      <CodeBlock title="File response">
+      <CodeBlock title="File response" language="json">
         {`{\n  "path": "documents/report.pdf",\n  "name": "report.pdf",\n  "size": "1.2 MB",\n  "sizeBytes": 1258291,\n  "contentType": "application/pdf",\n  "isDir": false,\n  "isFile": true\n}`}
       </CodeBlock>
 
-      <CodeBlock title="Directory response">
+      <CodeBlock title="Directory response" language="json">
         {`{\n  "path": "documents",\n  "files": [...],\n  "isDir": true\n}`}
       </CodeBlock>
 

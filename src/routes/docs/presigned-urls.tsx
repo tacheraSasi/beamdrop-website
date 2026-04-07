@@ -33,7 +33,7 @@ function PresignedUrlsPage() {
       <p className="text-sm text-muted-foreground mb-3">
         The token is an HMAC-SHA256 signature of four fields joined by newlines:
       </p>
-      <CodeBlock title="Token algorithm">
+      <CodeBlock title="Token algorithm" language="markup">
         {`message = "<METHOD>\\n<BUCKET>\\n<KEY>\\n<UNIX_TIMESTAMP>"\ntoken = Base64URL(HMAC-SHA256(secret_key, message))`}
       </CodeBlock>
       <DocTable
@@ -151,7 +151,7 @@ function PresignedUrlsPage() {
       <CodeBlock title="POST /api/v1/presign">
         {`curl -X POST https://server/api/v1/presign \\\n  -H "Authorization: Bearer BDK_xxx:signature" \\\n  -H "X-Beamdrop-Date: 2026-02-24T12:00:00Z" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "bucket": "photos",\n    "key": "vacation/beach.jpg",\n    "expiresIn": 3600,\n    "maxDownloads": 100\n  }'`}
       </CodeBlock>
-      <CodeBlock title="Response">
+      <CodeBlock title="Response" language="json">
         {`{\n  "token": "a1b2c3d4e5f6789a0b1c2d3e4f5a6b7c",\n  "url": "https://server/dl/a1b2c3d4e5f6789a0b1c2d3e4f5a6b7c",\n  "bucket": "photos",\n  "key": "vacation/beach.jpg",\n  "method": "GET",\n  "expiresAt": "2026-02-24T13:00:00Z",\n  "maxDownloads": 100,\n  "createdAt": "2026-02-24T12:00:00Z"\n}`}
       </CodeBlock>
 

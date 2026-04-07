@@ -109,7 +109,7 @@ function AuthPage() {
       <p className="text-muted-foreground leading-relaxed mb-4">
         The signature is computed as:
       </p>
-      <CodeBlock title="Signature algorithm">
+      <CodeBlock title="Signature algorithm" language="markup">
         {`string_to_sign = "<METHOD>\\n<PATH>\\n<TIMESTAMP>"\nsignature = Base64(HMAC-SHA256(secret_key, string_to_sign))`}
       </CodeBlock>
       <CodeBlock title="Example with curl">
