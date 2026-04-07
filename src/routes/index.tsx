@@ -167,7 +167,11 @@ function Landing() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-card/50 backdrop-blur-sm mb-8">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
               <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Open Source &bull; Self-Hosted
+                Open Source
+              </span>
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                Self-Hosted
               </span>
             </div>
           </motion.div>
