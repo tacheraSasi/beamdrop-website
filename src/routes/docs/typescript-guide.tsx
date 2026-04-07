@@ -31,7 +31,10 @@ function TypeScriptGuidePage() {
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         2. File Operations
       </h2>
-      <CodeBlock title="List, upload, download, manage files" language="typescript">
+      <CodeBlock
+        title="List, upload, download, manage files"
+        language="typescript"
+      >
         {`// List files\nconst files = await api("/api/files?path=documents");\nconsole.log("Files:", files.files?.length);\n\n// Upload a file\nconst form = new FormData();\nform.append("file", new File(["Hello!"], "hello.txt"));\nawait api("/api/upload?path=documents", { method: "POST", body: form });\n\n// Download a file\nconst res = await api("/api/download?path=documents/hello.txt");\nconst blob = await (res as Response).blob();\n\n// Create a directory\nawait api("/api/mkdir", {\n  method: "POST",\n  body: JSON.stringify({ path: "documents/reports" }),\n});\n\n// Move a file\nawait api("/api/move", {\n  method: "POST",\n  body: JSON.stringify({\n    source: "documents/hello.txt",\n    destination: "documents/reports/hello.txt",\n  }),\n});\n\n// Copy a file\nawait api("/api/copy", {\n  method: "POST",\n  body: JSON.stringify({\n    source: "documents/reports/hello.txt",\n    destination: "documents/hello-copy.txt",\n  }),\n});\n\n// Rename\nawait api("/api/rename", {\n  method: "POST",\n  body: JSON.stringify({\n    path: "documents/hello-copy.txt",\n    newName: "greeting.txt",\n  }),\n});\n\n// Trash (soft delete)\nawait api("/api/trash", {\n  method: "POST",\n  body: JSON.stringify({ path: "documents/greeting.txt" }),\n});\n\n// Write file content directly\nawait api("/api/write", {\n  method: "POST",\n  body: JSON.stringify({\n    path: "documents/notes.md",\n    content: "# My Notes\\n\\nHello world!",\n  }),\n});\n\n// Search files\nconst results = await api("/api/search?q=hello&path=documents");\nconsole.log("Found:", results.results?.length, "files");\n\n// Star / Unstar\nawait api("/api/star", {\n  method: "POST",\n  body: JSON.stringify({ path: "documents/notes.md" }),\n});\nconst starred = await api("/api/stars");\nconsole.log("Starred files:", starred);`}
       </CodeBlock>
 
