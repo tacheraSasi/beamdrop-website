@@ -1,20 +1,30 @@
 import { useState, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { Highlight, themes } from "prism-react-renderer";
 import { Copy, Check, ChevronRight } from "lucide-react";
+import { useTheme } from "@/components/ThemeProvider";
 
 export const CodeBlock = ({
   children,
   title,
+  language = "bash",
 }: {
   children: string;
   title?: string;
+  language?: string;
 }) => {
   const [copied, setCopied] = useState(false);
+  const { theme } = useTheme();
   const copy = () => {
     navigator.clipboard.writeText(children);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   return (
     <div className="relative group rounded-lg overflow-hidden border border-border bg-background/80 my-4">
@@ -35,9 +45,28 @@ export const CodeBlock = ({
           </button>
         </div>
       )}
-      <pre className="p-4 overflow-x-auto text-sm font-mono text-foreground/90 scrollbar-thin">
-        <code>{children}</code>
-      </pre>
+      <Highlight
+        theme={isDark ? themes.nightOwl : themes.nightOwlLight}
+        code={children.trim()}
+        language={language}
+      >
+        {({ tokens, getLineProps, getTokenProps }) => (
+          <pre
+            className="p-4 overflow-x-auto text-sm font-mono scrollbar-thin"
+            style={{ background: "transparent" }}
+          >
+            <code>
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
+            </code>
+          </pre>
+        )}
+      </Highlight>
     </div>
   );
 };

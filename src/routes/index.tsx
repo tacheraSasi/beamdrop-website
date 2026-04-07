@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -16,8 +15,6 @@ import {
   Share2,
   HardDrive,
   ArrowRight,
-  Copy,
-  Check,
   Key,
   ExternalLink,
   BookOpen,
@@ -26,6 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { CodeBlock } from "@/components/DocPage";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -38,46 +36,6 @@ const fadeUp = {
     y: 0,
     transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as const },
   }),
-};
-
-const CodeBlock = ({
-  children,
-  title,
-}: {
-  children: string;
-  title?: string;
-}) => {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(children);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="relative group rounded-lg overflow-hidden border border-border bg-background/80">
-      {title && (
-        <div className="px-4 py-2 border-b border-border bg-muted/50 flex items-center justify-between">
-          <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider">
-            {title}
-          </span>
-          <button
-            onClick={copy}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {copied ? (
-              <Check className="w-3.5 h-3.5" />
-            ) : (
-              <Copy className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-      )}
-      <pre className="p-4 overflow-x-auto text-sm font-mono text-foreground/90 scrollbar-thin">
-        <code>{children}</code>
-      </pre>
-    </div>
-  );
 };
 
 const features = [
