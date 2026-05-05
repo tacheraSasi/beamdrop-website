@@ -358,7 +358,11 @@ function Landing() {
                   ["-rate-limit", "Rate limit multiplier", "1"],
                   ["-db-path", "Database file path", "Auto"],
                   ["-qr", "Show QR code in terminal", "false"],
-                  ["-max-storage", "Max total storage (e.g. 10GB)", "0 (unlimited)"],
+                  [
+                    "-max-storage",
+                    "Max total storage (e.g. 10GB)",
+                    "0 (unlimited)",
+                  ],
                   ["-shutdown-timeout", "Graceful shutdown timeout", "30s"],
                   ["-v", "Show version", ""],
                   ["-h", "Show help", ""],
