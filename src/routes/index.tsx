@@ -105,7 +105,7 @@ const features = [
 function Landing() {
   useSeo({
     title:
-      "BeamDrop — Lightweight Self-Hosted File Server with S3-Compatible API",
+      "BeamDrop — Turn any VPS or server into a private, self-hosted Google Drive + S3 in seconds.",
     description:
       "Fast, lightweight, self-hosted file server with an S3-compatible API built in Go. Single binary, Docker-ready, with shareable links, presigned URLs, and a modern web UI.",
     path: "/",
