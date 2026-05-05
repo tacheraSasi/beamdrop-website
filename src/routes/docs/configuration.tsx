@@ -20,7 +20,11 @@ function ConfigurationPage() {
           ["-dir", "Directory to share", ". (current)"],
           ["-port", "Server port", "Auto-detect (prefers 7777)"],
           ["-p", "Password for web authentication", "None (disabled)"],
-          ["-api-auth", "Enable API key authentication for S3 API IMPORTANT", "false"],
+          [
+            "-api-auth",
+            "Enable API key authentication for S3 API IMPORTANT",
+            "false",
+          ],
           ["-tls-cert", "Path to TLS certificate file", "None"],
           ["-tls-key", "Path to TLS private key file", "None"],
           [
@@ -34,7 +38,11 @@ function ConfigurationPage() {
             "~/.beamdrop/beamdrop.db",
           ],
           ["-rate-limit", "Requests/min per IP (0 = disabled)", "100"],
-          ["-max-storage", "Maximum total storage, e.g. 500MB, 10GB, 1TB (0 = unlimited)", "0"],
+          [
+            "-max-storage",
+            "Maximum total storage, e.g. 500MB, 10GB, 1TB (0 = unlimited)",
+            "0",
+          ],
           ["-log-level", "debug, info, warn, error", "info"],
           ["-qr", "Enable QR code display", "false"],
           ["-shutdown-timeout", "Graceful shutdown timeout", "30s"],
@@ -53,7 +61,11 @@ function ConfigurationPage() {
           ["BEAMDROP_PASSWORD", "(none)", "Enable password auth"],
           ["BEAMDROP_LOG_LEVEL", "info", "Log level"],
           ["BEAMDROP_RATE_LIMIT", "100", "Requests/min per IP"],
-          ["BEAMDROP_MAX_STORAGE", "0", "Max storage, e.g. 500MB, 10GB, 1TB (0 = unlimited)"],
+          [
+            "BEAMDROP_MAX_STORAGE",
+            "0",
+            "Max storage, e.g. 500MB, 10GB, 1TB (0 = unlimited)",
+          ],
           ["BEAMDROP_API_AUTH", "false", "Enable S3 API key auth"],
           ["BEAMDROP_QR", "false", "Enable QR code display"],
           ["BEAMDROP_ALLOWED_ORIGINS", "(none)", "CORS origins"],

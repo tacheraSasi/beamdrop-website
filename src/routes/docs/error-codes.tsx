@@ -45,8 +45,16 @@ function ErrorCodesPage() {
         headers={["Code", "HTTP", "Description"]}
         rows={[
           ["INVALID_REQUEST", "400", "Malformed request body or parameters"],
-          ["INVALID_BUCKET_NAME", "400", "Bucket name doesn't meet naming rules"],
-          ["INVALID_OBJECT_KEY", "400", "Invalid object key (empty, traversal, too long)"],
+          [
+            "INVALID_BUCKET_NAME",
+            "400",
+            "Bucket name doesn't meet naming rules",
+          ],
+          [
+            "INVALID_OBJECT_KEY",
+            "400",
+            "Invalid object key (empty, traversal, too long)",
+          ],
           ["INVALID_PATH", "400", "Path traversal attempt or invalid path"],
           ["INVALID_MIME_TYPE", "415", "File MIME type not in allowed list"],
           ["FILE_TOO_LARGE", "413", "File exceeds 100 MB limit"],
