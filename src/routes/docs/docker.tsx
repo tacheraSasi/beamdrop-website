@@ -28,7 +28,7 @@ function DockerPage() {
         Docker Compose
       </h2>
       <CodeBlock title="docker-compose.yml" language="yaml">
-        {`version: "3.8"\n\nservices:\n  beamdrop:\n    build: .\n    ports:\n      - "7777:7777"\n    volumes:\n      - beamdrop-data:/data\n    environment:\n      - BEAMDROP_PASSWORD=your-secret\n      - BEAMDROP_API_AUTH=true\n      - BEAMDROP_RATE_LIMIT=100\n    healthcheck:\n      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7777/health/live"]\n      interval: 30s\n      timeout: 5s\n      retries: 3\n    restart: unless-stopped\n\nvolumes:\n  beamdrop-data:`}
+        {`services:\n  beamdrop:\n    build: .\n    ports:\n      - "7777:7777"\n    volumes:\n      - ./data:/data\n    environment:\n      BEAMDROP_PORT: \${BEAMDROP_PORT:-7777}\n      BEAMDROP_PASSWORD: \${BEAMDROP_PASSWORD:-}\n      BEAMDROP_API_AUTH: \${BEAMDROP_API_AUTH:-false}\n      BEAMDROP_RATE_LIMIT: \${BEAMDROP_RATE_LIMIT:-100}\n      BEAMDROP_MAX_STORAGE: \${BEAMDROP_MAX_STORAGE:-0}\n      BEAMDROP_LOG_LEVEL: \${BEAMDROP_LOG_LEVEL:-info}\n      BEAMDROP_QR: \${BEAMDROP_QR:-false}\n      BEAMDROP_ALLOWED_ORIGINS: \${BEAMDROP_ALLOWED_ORIGINS:-}\n      BEAMDROP_DB_PATH: \${BEAMDROP_DB_PATH:-}\n      BEAMDROP_TLS_CERT: \${BEAMDROP_TLS_CERT:-}\n      BEAMDROP_TLS_KEY: \${BEAMDROP_TLS_KEY:-}\n    healthcheck:\n      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7777/health/live"]\n      interval: 30s\n      timeout: 5s\n      retries: 3\n    restart: unless-stopped`}
       </CodeBlock>
 
       {/* Kubernetes */}
@@ -36,7 +36,7 @@ function DockerPage() {
         Kubernetes Probes
       </h2>
       <CodeBlock title="deployment.yaml (probes section)" language="yaml">
-        {`livenessProbe:\n  httpGet:\n    path: /health/live\n    port: 7777\n  initialDelaySeconds: 5\n  periodSeconds: 10\n\nreadinessProbe:\n  httpGet:\n    path: /health/ready\n    port: 7777\n  initialDelaySeconds: 5\n  periodSeconds: 5\n\nstartupProbe:\n  httpGet:\n    path: /health/startup\n    port: 7777\n  failureThreshold: 30\n  periodSeconds: 2`}
+        {`livenessProbe:\n  httpGet:\n    path: /health/live\n    port: 7777\n  initialDelaySeconds: 5\n  periodSeconds: 10\n  failureThreshold: 3\n\nreadinessProbe:\n  httpGet:\n    path: /health/ready\n    port: 7777\n  initialDelaySeconds: 10\n  periodSeconds: 15\n  failureThreshold: 3\n\nstartupProbe:\n  httpGet:\n    path: /health/startup\n    port: 7777\n  failureThreshold: 30\n  periodSeconds: 2`}
       </CodeBlock>
 
       {/* Rate Limiting */}
@@ -50,9 +50,9 @@ function DockerPage() {
       <DocTable
         headers={["Category", "Limit", "Example"]}
         rows={[
-          ["General", "N req/min", "File listing, health checks"],
-          ["Auth", "N/20 req/min", "Login, API key creation"],
-          ["Upload", "N/10 req/min", "File uploads, writes"],
+          ["General", "N req/min", "All endpoints"],
+          ["Auth", "N/20 req/min (min 1)", "/auth/login"],
+          ["Upload", "N/10 req/min (min 1)", "/upload, S3 PUT object"],
         ]}
       />
 
@@ -98,6 +98,11 @@ function DockerPage() {
           ["BEAMDROP_PASSWORD", "(none)", "Enable password authentication"],
           ["BEAMDROP_LOG_LEVEL", "info", "Log level: debug, info, warn, error"],
           ["BEAMDROP_RATE_LIMIT", "100", "Requests/min per IP (0 = disabled)"],
+          [
+            "BEAMDROP_MAX_STORAGE",
+            "0",
+            "Max storage, e.g. 500MB, 10GB, 1TB (0 = unlimited)",
+          ],
           [
             "BEAMDROP_API_AUTH",
             "(off)",

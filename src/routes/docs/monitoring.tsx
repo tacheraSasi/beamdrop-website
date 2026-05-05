@@ -26,7 +26,7 @@ function MonitoringPage() {
         ]}
       />
       <CodeBlock title="Full health response">
-        {`GET /health\n\n{\n  "status": "healthy",\n  "version": "1.0.0",\n  "uptime": "2h30m15s",\n  "components": {\n    "storage": "healthy",\n    "database": "healthy",\n    "server": "healthy"\n  }\n}`}
+        {`GET /health\n\n{\n  "status": "healthy",\n  "service": "beamdrop",\n  "version": "0.0.1",\n  "timestamp": "2025-01-15T10:30:00Z",\n  "components": {\n    "process": { "status": "ok", "message": "running" },\n    "startup": { "status": "ok", "message": "initialisation complete" },\n    "database": { "status": "ok", "message": "connected", "latency": "1.23ms" },\n    "storage": { "status": "ok", "message": "writable" },\n    "runtime": { "status": "ok", "message": "goroutines: 12" }\n  }\n}`}
       </CodeBlock>
 
       {/* Stats */}
@@ -34,15 +34,15 @@ function MonitoringPage() {
         Stats Endpoint
       </h2>
       <CodeBlock title="GET /stats">
-        {`GET /stats\n\n{\n  "totalFiles": 1234,\n  "totalSize": "1.2 GB",\n  "totalSizeBytes": 1288490188,\n  "storageUsed": "45%",\n  "uptime": "2h30m15s",\n  "version": "1.0.0"\n}`}
+        {`GET /stats\n\n{\n  "downloads": 42,\n  "uploads": 15,\n  "requests": 1234,\n  "startTime": "2025-01-15T08:00:00Z"\n}`}
       </CodeBlock>
 
       {/* WebSocket */}
       <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
         Real-Time Stats (WebSocket)
       </h2>
-      <CodeBlock title="wscat">
-        {`wscat -c ws://localhost:7777/ws/stats\n\n# Receives periodic updates:\n{\n  "totalFiles": 1234,\n  "totalSize": "1.2 GB",\n  "connections": 5,\n  "cpuUsage": "12.5%",\n  "memoryUsage": "256 MB",\n  "goroutines": 42\n}`}
+      <CodeBlock title="WebSocket connection">
+        {`ws://localhost:7777/ws/stats\n\n# Receives updates every 60 seconds:\n{\n  "downloads": 42,\n  "requests": 1234,\n  "uploads": 15,\n  "startTime": "2025-01-15T08:00:00Z",\n  "system": {\n    "memory": { "total": 16000000000, "used": 8000000000, "percent": 50.0 },\n    "disk": { "total": 500000000000, "used": 200000000000, "percent": 40.0 },\n    "cpu": { "percent": 25.0 }\n  }\n}`}
       </CodeBlock>
 
       {/* Logs */}
@@ -52,14 +52,14 @@ function MonitoringPage() {
       <DocTable
         headers={["Parameter", "Type", "Default", "Description"]}
         rows={[
-          ["limit", "number", "100", "Max entries to return"],
-          ["offset", "number", "0", "Pagination offset"],
-          ["level", "string", "all", "Filter by level (info, warn, error)"],
-          ["search", "string", "—", "Search in log messages"],
+          ["limit", "number", "200", "Max entries to return (max 5000)"],
+          ["offset", "number", "0", "Entries to skip (for pagination)"],
+          ["level", "string", "(all)", "Filter by log level"],
+          ["search", "string", "—", "Case-insensitive message search"],
         ]}
       />
       <CodeBlock title="GET /api/logs">
-        {`GET /api/logs?limit=50&level=error\n\n{\n  "logs": [\n    {\n      "timestamp": "2025-01-15T10:30:00Z",\n      "level": "error",\n      "message": "Failed to write file",\n      "details": { "path": "uploads/large.bin", "error": "disk full" }\n    }\n  ],\n  "total": 1,\n  "hasMore": false\n}`}
+        {`GET /api/logs?limit=200&offset=0&level=error&search=upload\n\n{\n  "logs": [\n    {\n      "time": "2025-01-15T10:30:00Z",\n      "level": "INFO",\n      "msg": "File uploaded successfully",\n      "file": "photo.jpg"\n    }\n  ],\n  "total": 500,\n  "returned": 200,\n  "hasMore": true,\n  "logPath": "/data/.beamdrop/beamdrop.log"\n}`}
       </CodeBlock>
 
       {/* Prometheus Metrics */}

@@ -30,19 +30,18 @@ function ArchitecturePage() {
       <DocTable
         headers={["Method", "Endpoint", "Description"]}
         rows={[
-          ["GET", "/api/files?path=", "List files in directory"],
-          ["POST", "/api/upload?path=", "Upload file (multipart, 100 MB max)"],
-          ["GET", "/api/download?path=", "Download file"],
-          ["POST", "/api/mkdir", "Create directory"],
-          ["POST", "/api/move", "Move file/folder"],
-          ["POST", "/api/copy", "Copy file/folder"],
-          ["POST", "/api/rename", "Rename file/folder"],
-          ["POST", "/api/trash", "Move to trash (soft delete)"],
-          ["POST", "/api/write", "Create/overwrite file (JSON body)"],
-          ["GET", "/api/search?q=&path=", "Search files"],
-          ["POST", "/api/star", "Star a file"],
-          ["DELETE", "/api/star?path=", "Unstar a file"],
-          ["GET", "/api/stars", "Get starred files"],
+          ["GET", "/files?path=", "List files in directory"],
+          ["POST", "/upload", "Upload file (multipart, 100 MB max)"],
+          ["GET", "/download?file=", "Download file"],
+          ["POST", "/mkdir", "Create directory"],
+          ["POST", "/move", "Move file/folder"],
+          ["POST", "/copy", "Copy file/folder"],
+          ["POST", "/rename", "Rename file/folder"],
+          ["POST", "/trash", "Move to trash (soft delete)"],
+          ["POST", "/write", "Create/overwrite file (JSON body)"],
+          ["GET", "/search?q=&path=", "Search files"],
+          ["POST", "/star", "Toggle star on a file"],
+          ["GET", "/starred", "Get starred files"],
         ]}
       />
 
@@ -52,21 +51,16 @@ function ArchitecturePage() {
       <DocTable
         headers={["Method", "Endpoint", "Description"]}
         rows={[
-          ["GET", "/api/s3/", "List all buckets"],
-          ["PUT", "/api/s3/{bucket}", "Create bucket"],
-          ["HEAD", "/api/s3/{bucket}", "Check bucket exists"],
-          ["GET", "/api/s3/{bucket}", "Get bucket info"],
-          ["DELETE", "/api/s3/{bucket}", "Delete empty bucket"],
-          ["PUT", "/api/s3/{bucket}/{key}", "Upload object (raw body)"],
-          ["POST", "/api/s3/{bucket}/{key}", "Upload object (multipart)"],
-          ["GET", "/api/s3/{bucket}/{key}", "Download object"],
-          ["HEAD", "/api/s3/{bucket}/{key}", "Get object metadata"],
-          ["DELETE", "/api/s3/{bucket}/{key}", "Delete object"],
-          [
-            "GET",
-            "/api/s3/{bucket}?list&prefix=&delimiter=&max-keys=",
-            "List objects",
-          ],
+          ["GET", "/api/v1/buckets", "List all buckets"],
+          ["PUT", "/api/v1/buckets/{bucket}", "Create bucket"],
+          ["HEAD", "/api/v1/buckets/{bucket}", "Check bucket exists"],
+          ["GET", "/api/v1/buckets/{bucket}", "Get bucket info / list objects"],
+          ["DELETE", "/api/v1/buckets/{bucket}", "Delete empty bucket"],
+          ["PUT", "/api/v1/buckets/{b}/{key}", "Upload object (raw body)"],
+          ["POST", "/api/v1/buckets/{b}/{key}", "Upload object (multipart)"],
+          ["GET", "/api/v1/buckets/{b}/{key}", "Download object"],
+          ["HEAD", "/api/v1/buckets/{b}/{key}", "Get object metadata"],
+          ["DELETE", "/api/v1/buckets/{b}/{key}", "Delete object"],
         ]}
       />
 
@@ -76,11 +70,12 @@ function ArchitecturePage() {
       <DocTable
         headers={["Method", "Endpoint", "Description"]}
         rows={[
-          ["POST", "/api/login", "Password login (returns JWT)"],
-          ["POST", "/api/logout", "Logout"],
-          ["POST", "/api/keys", "Create API key"],
-          ["GET", "/api/keys", "List API keys"],
-          ["DELETE", "/api/keys/{id}", "Delete API key"],
+          ["GET", "/auth/status", "Check auth status"],
+          ["POST", "/auth/login", "Password login (returns JWT)"],
+          ["POST", "/auth/logout", "Logout (clear session)"],
+          ["POST", "/api/v1/keys", "Create API key"],
+          ["GET", "/api/v1/keys", "List API keys"],
+          ["DELETE", "/api/v1/keys?accessKeyId=", "Delete API key"],
           ["POST", "/api/shares", "Create shareable link"],
           ["GET", "/api/shares/list", "List all links"],
           ["DELETE", "/api/shares/delete?token=", "Delete link"],

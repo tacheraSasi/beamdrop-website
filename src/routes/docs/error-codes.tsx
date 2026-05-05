@@ -16,7 +16,7 @@ function ErrorCodesPage() {
         Error Response Format
       </h2>
       <CodeBlock title="JSON error structure" language="json">
-        {`{\n  "error": "Human-readable message",\n  "code": "MACHINE_READABLE_CODE",\n  "details": { /* optional context */ }\n}`}
+        {`{\n  "code": "BUCKET_NOT_FOUND",\n  "category": "NOT_FOUND",\n  "message": "Bucket 'my-bucket' not found"\n}`}
       </CodeBlock>
 
       {/* Categories */}
@@ -24,16 +24,16 @@ function ErrorCodesPage() {
         Error Categories
       </h2>
       <DocTable
-        headers={["HTTP Status", "Category", "Description"]}
+        headers={["Category", "Description"]}
         rows={[
-          ["400", "Validation", "Bad request / invalid input"],
-          ["401", "Authentication", "Missing or invalid credentials"],
-          ["403", "Authorization", "Insufficient permissions"],
-          ["404", "Not Found", "Resource does not exist"],
-          ["409", "Conflict", "Resource state conflict"],
-          ["413", "Payload", "Request body too large"],
-          ["429", "Rate Limit", "Too many requests"],
-          ["500", "Internal", "Server-side failures"],
+          ["VALIDATION", "Input validation errors"],
+          ["STORAGE", "Storage/filesystem errors"],
+          ["AUTH", "Authentication/authorization"],
+          ["NOT_FOUND", "Resource not found"],
+          ["CONFLICT", "Resource conflict"],
+          ["RATE_LIMIT", "Rate limiting"],
+          ["INTERNAL", "Internal server errors"],
+          ["UNAVAILABLE", "Service unavailable"],
         ]}
       />
 
@@ -42,21 +42,15 @@ function ErrorCodesPage() {
         Validation Errors (400)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          [
-            "INVALID_PATH",
-            "Path contains invalid characters or traversal attempts",
-          ],
-          [
-            "INVALID_BUCKET_NAME",
-            "Bucket name doesn't match [a-z0-9][a-z0-9.-]{1,61}[a-z0-9]",
-          ],
-          ["MISSING_REQUIRED_FIELD", "Required field not provided"],
-          ["INVALID_JSON", "Request body is not valid JSON"],
-          ["INVALID_CONTENT_TYPE", "Wrong Content-Type header"],
-          ["FILE_TOO_LARGE", "Upload exceeds 100 MB limit"],
-          ["INVALID_KEY_NAME", "API key name validation failed"],
+          ["INVALID_REQUEST", "400", "Malformed request body or parameters"],
+          ["INVALID_BUCKET_NAME", "400", "Bucket name doesn't meet naming rules"],
+          ["INVALID_OBJECT_KEY", "400", "Invalid object key (empty, traversal, too long)"],
+          ["INVALID_PATH", "400", "Path traversal attempt or invalid path"],
+          ["INVALID_MIME_TYPE", "415", "File MIME type not in allowed list"],
+          ["FILE_TOO_LARGE", "413", "File exceeds 100 MB limit"],
+          ["MISSING_FIELD", "400", "Required field missing"],
         ]}
       />
 
@@ -65,13 +59,13 @@ function ErrorCodesPage() {
         Storage Errors (500)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          ["STORAGE_ERROR", "Generic filesystem operation failed"],
-          ["DISK_FULL", "No space left on device"],
-          ["IO_ERROR", "Read/write error"],
-          ["DB_ERROR", "SQLite database error"],
-          ["INTERNAL_ERROR", "Unexpected server error"],
+          ["OBJECT_LOCKED", "423", "Object is locked by another operation"],
+          ["WRITE_FAILED", "500", "Failed to write file"],
+          ["READ_FAILED", "500", "Failed to read file"],
+          ["DELETE_FAILED", "500", "Failed to delete file"],
+          ["IO_ERROR", "500", "General filesystem I/O error"],
         ]}
       />
 
@@ -80,14 +74,14 @@ function ErrorCodesPage() {
         Authentication Errors (401/403)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          ["AUTH_REQUIRED", "No credentials provided"],
-          ["INVALID_PASSWORD", "Wrong password"],
-          ["INVALID_TOKEN", "JWT token expired or malformed"],
-          ["INVALID_API_KEY", "API key not found or revoked"],
-          ["INVALID_SIGNATURE", "HMAC signature verification failed"],
-          ["PERMISSION_DENIED", "API key lacks required permission"],
+          ["UNAUTHORIZED", "401", "Missing or invalid auth credentials"],
+          ["FORBIDDEN", "403", "Invalid signature or insufficient permissions"],
+          ["INVALID_TOKEN", "401", "JWT token is invalid"],
+          ["TOKEN_EXPIRED", "401", "JWT or timestamp expired"],
+          ["INVALID_API_KEY", "401", "API key not found or disabled"],
+          ["INVALID_PASSWORD", "401", "Wrong password"],
         ]}
       />
 
@@ -96,11 +90,11 @@ function ErrorCodesPage() {
         Not Found Errors (404)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          ["FILE_NOT_FOUND", "File or directory does not exist"],
-          ["BUCKET_NOT_FOUND", "Bucket does not exist"],
-          ["KEY_NOT_FOUND", "Object key not found in bucket"],
+          ["BUCKET_NOT_FOUND", "404", "Bucket doesn't exist"],
+          ["OBJECT_NOT_FOUND", "404", "Object doesn't exist"],
+          ["FILE_NOT_FOUND", "404", "File doesn't exist"],
         ]}
       />
 
@@ -109,11 +103,11 @@ function ErrorCodesPage() {
         Conflict Errors (409)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          ["ALREADY_EXISTS", "File or directory already exists"],
-          ["BUCKET_NOT_EMPTY", "Cannot delete bucket with objects"],
-          ["BUCKET_EXISTS", "Bucket already exists (non-idempotent)"],
+          ["BUCKET_EXISTS", "409", "Bucket already exists"],
+          ["FILE_EXISTS", "409", "File already exists"],
+          ["BUCKET_NOT_EMPTY", "409", "Cannot delete non-empty bucket"],
         ]}
       />
 
@@ -122,15 +116,15 @@ function ErrorCodesPage() {
         Rate Limit Errors (429)
       </h2>
       <DocTable
-        headers={["Code", "Description"]}
+        headers={["Code", "HTTP", "Description"]}
         rows={[
-          ["RATE_LIMITED", "Too many requests from this IP"],
-          ["UPLOAD_RATE_LIMITED", "Too many uploads from this IP"],
+          ["RATE_LIMIT_EXCEEDED", "429", "Per-IP rate limit exceeded"],
+          ["TOO_MANY_REQUESTS", "429", "Too many requests"],
         ]}
       />
 
       <CodeBlock title="Rate limit response example" language="markup">
-        {`HTTP/1.1 429 Too Many Requests\nRetry-After: 60\n\n{\n  "error": "Rate limit exceeded",\n  "code": "RATE_LIMITED",\n  "details": {\n    "retryAfter": 60,\n    "limit": 100\n  }\n}`}
+        {`HTTP/1.1 429 Too Many Requests\nRetry-After: 60\nX-Retryable: true\n\n{\n  "error": {\n    "code": "RATE_LIMIT_EXCEEDED",\n    "message": "Rate limit exceeded",\n    "category": "RATE_LIMIT"\n  }\n}`}
       </CodeBlock>
     </DocPage>
   );

@@ -12,6 +12,22 @@ function InstallationPage() {
             description="Install BeamDrop from source, download pre-built binaries, or use Docker."
         >
             <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-8 mb-3">
+                Quick Install (macOS & Linux)
+            </h2>
+            <CodeBlock title="One-line install">
+                {`curl -fsSL https://raw.githubusercontent.com/ekilie/beamdrop/main/docs/install.sh | sh`}
+            </CodeBlock>
+            <p className="text-sm text-muted-foreground mb-2">
+                Or inspect the script first:
+            </p>
+            <CodeBlock>
+                {`curl -fsSL https://raw.githubusercontent.com/ekilie/beamdrop/main/docs/install.sh -o install.sh\nless install.sh\nsh install.sh`}
+            </CodeBlock>
+            <p className="text-sm text-muted-foreground">
+                Options via environment variables: <code className="text-primary">BEAMDROP_VERSION=v1.0.0 sh install.sh</code> or <code className="text-primary">BEAMDROP_INSTALL=~/.local/bin sh install.sh</code>.
+            </p>
+
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight mt-10 mb-3">
                 From Source
             </h2>
             <CodeBlock title="Build from source">

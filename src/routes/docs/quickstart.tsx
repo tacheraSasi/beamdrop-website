@@ -35,7 +35,7 @@ function QuickStartPage() {
                 Configure via environment variables — create a <code className="text-primary">.env</code> file or export them:
             </p>
             <CodeBlock title=".env (optional)">
-                {`BEAMDROP_PORT=7777\nBEAMDROP_PASSWORD=your-secret-password\nBEAMDROP_LOG_LEVEL=info\nBEAMDROP_RATE_LIMIT=100\nBEAMDROP_API_AUTH=true\nBEAMDROP_ALLOWED_ORIGINS=https://example.com`}
+                {`BEAMDROP_PORT=7777\nBEAMDROP_PASSWORD=your-secret-password\nBEAMDROP_LOG_LEVEL=info\nBEAMDROP_RATE_LIMIT=100\nBEAMDROP_MAX_STORAGE=0\nBEAMDROP_API_AUTH=true\nBEAMDROP_ALLOWED_ORIGINS=https://example.com`}
             </CodeBlock>
         </DocPage>
     );
