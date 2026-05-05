@@ -355,6 +355,13 @@ function Landing() {
                   ["-tls-key", "TLS private key path", "None"],
                   ["-allowed-origins", "CORS allowed origins", "None"],
                   ["-log-level", "Log level (debug/info/warn/error)", "info"],
+                  ["-rate-limit", "Rate limit multiplier", "1"],
+                  ["-db-path", "Database file path", "Auto"],
+                  ["-qr", "Show QR code in terminal", "false"],
+                  ["-max-storage", "Max total storage (e.g. 10GB)", "0 (unlimited)"],
+                  ["-shutdown-timeout", "Graceful shutdown timeout", "30s"],
+                  ["-v", "Show version", ""],
+                  ["-h", "Show help", ""],
                 ].map(([flag, desc, def]) => (
                   <tr
                     key={flag}
@@ -405,13 +412,13 @@ function Landing() {
           >
             <motion.div variants={fadeUp} custom={1}>
               <CodeBlock title="Create a bucket & upload">
-                {`# Create bucket\ncurl -X PUT http://localhost:8080/api/v1/buckets/my-bucket \\\n  -H "Authorization: Bearer \${KEY}:\${SIG}" \\\n  -H "X-Beamdrop-Date: \${TS}"\n\n# Upload file\ncurl -X PUT http://localhost:8080/api/v1/buckets/my-bucket/file.txt \\\n  -H "Authorization: Bearer \${KEY}:\${SIG}" \\\n  -H "X-Beamdrop-Date: \${TS}" \\\n  -H "Content-Type: text/plain" \\\n  -d "Hello, World!"`}
+                {`# Create bucket\ncurl -X PUT http://localhost:7777/api/v1/buckets/my-bucket \\\n  -H "Authorization: Bearer \${KEY}:\${SIG}" \\\n  -H "X-Beamdrop-Date: \${TS}"\n\n# Upload file\ncurl -X PUT http://localhost:7777/api/v1/buckets/my-bucket/file.txt \\\n  -H "Authorization: Bearer \${KEY}:\${SIG}" \\\n  -H "X-Beamdrop-Date: \${TS}" \\\n  -H "Content-Type: text/plain" \\\n  -d "Hello, World!"`}
               </CodeBlock>
             </motion.div>
 
             <motion.div variants={fadeUp} custom={2}>
               <CodeBlock title="Shareable links API">
-                {`# Create a shareable link with password & expiry\ncurl -X POST http://localhost:8080/api/shares \\\n  -H "Content-Type: application/json" \\\n  -d '{"path": "/docs/report.pdf", "password": "secret", "expiresIn": 72}'\n\n# Access shared file\ncurl http://localhost:8080/share/<token>`}
+                {`# Create a shareable link with password & expiry\ncurl -X POST http://localhost:7777/api/shares \\\n  -H "Content-Type: application/json" \\\n  -d '{"filePath": "/docs/report.pdf", "password": "secret", "expiresIn": 86400}'\n\n# Access shared file\ncurl http://localhost:7777/api/shares/access/<token>`}
               </CodeBlock>
             </motion.div>
           </motion.div>

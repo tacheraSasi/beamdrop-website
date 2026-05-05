@@ -43,7 +43,7 @@ function TypeScriptGuidePage() {
         3. S3 Bucket Operations
       </h2>
       <CodeBlock title="Bucket CRUD" language="typescript">
-        {`// Create a bucket\nawait api("/api/s3/my-bucket", { method: "PUT" });\n\n// List all buckets\nconst buckets = await api("/api/s3/");\nconsole.log("Buckets:", buckets.buckets);\n\n// Check bucket exists\nconst head = await fetch(\`\${BASE}/api/s3/my-bucket\`, { method: "HEAD" });\nconsole.log("Exists:", head.ok);\n\n// Delete empty bucket\nawait api("/api/s3/my-bucket", { method: "DELETE" });`}
+        {`// Create an API key first (uses session auth)\nconst apiKey = await request("POST", "/api/v1/keys", {\n  body: { name: "my-app-key", permissions: "read,write", expiresIn: 2592000 },\n  token: authToken,\n});\nconsole.log("Access Key ID:", apiKey.accessKeyId);\nconsole.log("Secret Key:", apiKey.secretKey); // SAVE THIS! Shown only once.\n\nconst ACCESS_KEY_ID = apiKey.accessKeyId;\nconst SECRET_KEY = apiKey.secretKey;\n\n// HMAC signature helper\nfunction generateSignature(secretKey: string, method: string, path: string, timestamp: string) {\n  const message = \`\${method}\\n\${path}\\n\${timestamp}\`;\n  const hmac = crypto.createHmac("sha256", secretKey);\n  hmac.update(message);\n  return hmac.digest("base64");\n}\n\nasync function s3Request(method: string, path: string, options: { body?: any; stream?: Buffer } = {}) {\n  const timestamp = new Date().toISOString();\n  const signature = generateSignature(SECRET_KEY, method, path, timestamp);\n  const headers: Record<string, string> = {\n    Authorization: \`Bearer \${ACCESS_KEY_ID}:\${signature}\`,\n    "X-Beamdrop-Date": timestamp,\n  };\n  let body: any;\n  if (options.stream) body = options.stream;\n  else if (options.body) {\n    headers["Content-Type"] = "application/json";\n    body = JSON.stringify(options.body);\n  }\n  const res = await fetch(\`\${BASE_URL}\${path}\`, { method, headers, body });\n  if (res.status === 204) return null;\n  const ct = res.headers.get("content-type") || "";\n  return ct.includes("application/json") ? res.json() : res;\n}\n\n// Create a bucket\nconst createBucket = await s3Request("PUT", "/api/v1/buckets/my-bucket");\nconsole.log("Created bucket:", createBucket);\n\n// List buckets\nconst buckets = await s3Request("GET", "/api/v1/buckets");\nconsole.log("Buckets:", buckets);\n\n// Delete empty bucket\nawait s3Request("DELETE", "/api/v1/buckets/my-bucket");`}
       </CodeBlock>
 
       {/* S3 Object Operations */}
@@ -51,7 +51,7 @@ function TypeScriptGuidePage() {
         4. S3 Object Operations
       </h2>
       <CodeBlock title="Upload, download, list objects" language="typescript">
-        {`// Upload via PUT (raw body)\nawait fetch(\`\${BASE}/api/s3/my-bucket/data.json\`, {\n  method: "PUT",\n  headers: {\n    Authorization: \`Bearer \${token}\`,\n    "Content-Type": "application/json",\n  },\n  body: JSON.stringify({ key: "value" }),\n});\n\n// Upload via POST (multipart)\nconst objForm = new FormData();\nobjForm.append("file", new File(["binary data"], "photo.jpg"));\nawait api("/api/s3/my-bucket/photo.jpg", { method: "POST", body: objForm });\n\n// Download object\nconst obj = await api("/api/s3/my-bucket/data.json");\nconsole.log("Object:", obj);\n\n// Head (metadata only)\nconst meta = await fetch(\`\${BASE}/api/s3/my-bucket/data.json\`, {\n  method: "HEAD",\n  headers: { Authorization: \`Bearer \${token}\` },\n});\nconsole.log("Size:", meta.headers.get("content-length"));\nconsole.log("Type:", meta.headers.get("content-type"));\n\n// Delete object\nawait api("/api/s3/my-bucket/data.json", { method: "DELETE" });\n\n// List objects with prefix\nconst list = await api("/api/s3/my-bucket?list&prefix=images/&max-keys=10");\nconsole.log("Objects:", list.contents);\nconsole.log("Truncated:", list.isTruncated);`}
+        {`// Upload via PUT (raw body)\nconst putObject = await s3Request("PUT", "/api/v1/buckets/my-bucket/configs/app.json", {\n  stream: Buffer.from(JSON.stringify({ version: "1.0", debug: false })),\n});\nconsole.log("PUT object:", putObject);\n// => { bucket: "my-bucket", key: "configs/app.json", etag: "...", size: 38 }\n\n// Download object\nconst objectContent = await s3Request("GET", "/api/v1/buckets/my-bucket/configs/app.json");\nif (objectContent instanceof Response) {\n  console.log("Object:", await objectContent.text());\n}\n\n// List objects with prefix & delimiter\nconst allObjects = await s3Request("GET", "/api/v1/buckets/my-bucket?prefix=configs/");\nconsole.log("Objects:", allObjects);\n\n// List virtual directories\nconst virtualDirs = await s3Request("GET", "/api/v1/buckets/my-bucket?delimiter=/");\nconsole.log("Virtual directories:", virtualDirs.commonPrefixes);\n\n// Delete object\nawait s3Request("DELETE", "/api/v1/buckets/my-bucket/configs/app.json");`}
       </CodeBlock>
 
       {/* API Keys */}
@@ -59,7 +59,7 @@ function TypeScriptGuidePage() {
         5. API Key Management
       </h2>
       <CodeBlock title="Create, list, delete API keys" language="typescript">
-        {`// Create an API key\nconst key = await api("/api/keys", {\n  method: "POST",\n  body: JSON.stringify({\n    name: "ci-deploy",\n    permissions: ["read", "write"],\n    bucketScope: "deployments",\n    expiresIn: 2592000,  // 30 days\n  }),\n});\nconsole.log("Key ID:", key.keyId);\nconsole.log("Secret:", key.keySecret);  // shown only once!\n\n// List keys\nconst keys = await api("/api/keys");\nconsole.log("Active keys:", keys.keys);\n\n// Delete a key\nawait api(\`/api/keys/\${key.id}\`, { method: "DELETE" });`}
+        {`// Create an API key (uses session auth, not API key auth)\nconst key = await request("POST", "/api/v1/keys", {\n  body: {\n    name: "ci-deploy",\n    permissions: "read,write",\n    bucketScope: "deployments",\n    expiresIn: 2592000,  // 30 days\n  },\n  token: authToken,\n});\nconsole.log("Access Key ID:", key.accessKeyId);\nconsole.log("Secret Key:", key.secretKey);  // shown only once!\n\n// List keys\nconst keys = await request("GET", "/api/v1/keys", { token: authToken });\nconsole.log("Active keys:", keys.keys);\n\n// Delete a key\nawait request("DELETE", \`/api/v1/keys?accessKeyId=\${key.accessKeyId}\`, {\n  token: authToken,\n});`}
       </CodeBlock>
 
       {/* Presigned URLs */}
@@ -67,10 +67,10 @@ function TypeScriptGuidePage() {
         6. Presigned URLs
       </h2>
       <CodeBlock title="Client-side HMAC presigned URL" language="typescript">
-        {`import crypto from "crypto";\n\nfunction presign(bucket: string, key: string, secret: string, ttl = 3600) {\n  const expires = Math.floor(Date.now() / 1000) + ttl;\n  const path = \`/api/s3/\${bucket}/\${key}\`;\n  const data = \`GET\\n\${path}\\n\${expires}\`;\n  const sig = crypto.createHmac("sha256", secret).update(data).digest("hex");\n  return \`\${BASE}\${path}?X-Amz-Expires=\${expires}&X-Amz-Signature=\${sig}\`;\n}\n\nconst url = presign("my-bucket", "photo.jpg", key.keySecret);\nconsole.log("Presigned URL:", url);`}
+        {`// Generate a presigned URL for direct download access\nfunction presign(bucket: string, key: string, accessKeyId: string, secretKey: string, ttl = 3600) {\n  const expires = Math.floor(Date.now() / 1000) + ttl;\n  const path = \`/api/v1/buckets/\${bucket}/\${key}\`;\n  const data = \`GET\\n\${path}\\n\${expires}\`;\n  const sig = crypto.createHmac("sha256", secretKey).update(data).digest("hex");\n  return \`\${BASE_URL}\${path}?X-Bd-Expires=\${expires}&X-Bd-KeyId=\${accessKeyId}&X-Bd-Signature=\${sig}\`;\n}\n\nconst presignedUrl = presign("my-bucket", "configs/app.json", ACCESS_KEY_ID, SECRET_KEY, 3600);\nconsole.log("Presigned URL:", presignedUrl);`}
       </CodeBlock>
-      <CodeBlock title="Server-side pretty URLs" language="typescript">
-        {`// Create a pretty download link\nconst dl = await api("/api/s3/my-bucket/photo.jpg/presign", {\n  method: "POST",\n  body: JSON.stringify({ expiresIn: 86400 }),\n});\nconsole.log("Download URL:", dl.url);  // /dl/{token}\n\n// List active tokens\nconst tokens = await api("/api/s3/my-bucket/photo.jpg/presign");\nconsole.log("Active tokens:", tokens);\n\n// Revoke a token\nawait api(\n  \`/api/s3/my-bucket/photo.jpg/presign/\${dl.token}\`,\n  { method: "DELETE" }\n);`}
+      <CodeBlock title="Server-side presigned URLs" language="typescript">
+        {`// Create a presigned download token via S3 API\nconst dl = await s3Request("POST", "/api/v1/buckets/my-bucket/configs/app.json/presign", {\n  body: { expiresIn: 86400 },\n});\nconsole.log("Download URL:", dl.url);  // /dl/{token}\n\n// List active presigned tokens\nconst tokens = await s3Request("GET", "/api/v1/buckets/my-bucket/configs/app.json/presign");\nconsole.log("Active tokens:", tokens);\n\n// Revoke a token\nawait s3Request("DELETE", \`/api/v1/buckets/my-bucket/configs/app.json/presign/\${dl.token}\`);`}
       </CodeBlock>
 
       {/* Shares */}
@@ -78,7 +78,7 @@ function TypeScriptGuidePage() {
         7. Shareable Links
       </h2>
       <CodeBlock title="Create, access, delete shares" language="typescript">
-        {`// Create a shareable link\nconst share = await api("/api/shares", {\n  method: "POST",\n  body: JSON.stringify({\n    path: "documents/report.pdf",\n    password: "optional-secret",\n    expiresIn: 86400,\n  }),\n});\nconsole.log("Share URL:", share.url);\n\n// List all links\nconst shares = await api("/api/shares/list");\nconsole.log("Active shares:", shares);\n\n// Access (public — no auth needed)\nconst shared = await fetch(\n  \`\${BASE}/api/shares/access/\${share.token}?password=optional-secret\`\n);\nconst content = await shared.json();\n\n// Delete a link\nawait api(\`/api/shares/delete?token=\${share.token}\`, { method: "DELETE" });`}
+        {`// Create a shareable link\nconst share = await request("POST", "/api/shares", {\n  body: {\n    filePath: "projects/my-app/README.md",\n    expiresIn: 86400,    // 24 hours (seconds)\n    maxDownloads: 100,\n    password: "secret",\n  },\n  token: authToken,\n});\nconsole.log("Share token:", share.token);\nconsole.log("URL:", share.url);\n\n// List all links\nconst shares = await request("GET", "/api/shares/list", { token: authToken });\nconsole.log("Active shares:", shares.shares?.length);\n\n// Access shared content (password required if set)\nconst shared = await request("POST", \`/api/shares/access/\${share.token}\`, {\n  body: { password: "secret" },\n});\nconsole.log("Shared file:", shared);\n\n// Delete a share\nawait request("DELETE", \`/api/shares/delete?token=\${share.token}\`, {\n  token: authToken,\n});`}
       </CodeBlock>
 
       {/* Health & Stats */}
@@ -86,7 +86,7 @@ function TypeScriptGuidePage() {
         8. Health & Monitoring
       </h2>
       <CodeBlock title="Health, stats, logs" language="typescript">
-        {`// Health check\nconst health = await api("/health");\nconsole.log("Status:", health.status);\nconsole.log("Components:", health.components);\n\n// Server stats\nconst stats = await api("/stats");\nconsole.log("Files:", stats.totalFiles, "Size:", stats.totalSize);\n\n// Query logs\nconst logs = await api("/api/logs?limit=10&level=error");\nconsole.log("Errors:", logs.logs);`}
+        {`// Health check\nconst health = await request("GET", "/health");\nconsole.log("Service:", health.service);\nconsole.log("Database:", health.components.database.status, health.components.database.latency);\nconsole.log("Storage:", health.components.storage.status);\n\n// Server stats\nconst stats = await request("GET", "/stats");\nconsole.log("Downloads:", stats.downloads, "Uploads:", stats.uploads);\nconsole.log("Requests:", stats.requests, "Start time:", stats.startTime);\n\n// Query logs\nconst logs = await request("GET", "/api/logs?limit=10&level=error", { token: authToken });\nconsole.log("Errors:", logs.logs);\nconsole.log("Total:", logs.total, "Has more:", logs.hasMore);`}
       </CodeBlock>
 
       {/* WebSocket */}
@@ -94,7 +94,7 @@ function TypeScriptGuidePage() {
         9. Real-Time Stats (WebSocket)
       </h2>
       <CodeBlock title="WebSocket connection" language="typescript">
-        {`const ws = new WebSocket("ws://localhost:7777/ws/stats");\n\nws.onmessage = (event) => {\n  const stats = JSON.parse(event.data);\n  console.log("CPU:", stats.cpuUsage);\n  console.log("Memory:", stats.memoryUsage);\n  console.log("Files:", stats.totalFiles);\n  console.log("Connections:", stats.connections);\n};\n\nws.onerror = (err) => console.error("WebSocket error:", err);\nws.onclose = () => console.log("WebSocket closed");`}
+        {`const ws = new WebSocket("ws://localhost:7777/ws/stats");\n\nws.onmessage = (event) => {\n  const data = JSON.parse(event.data);\n  console.log("Downloads:", data.downloads);\n  console.log("Uploads:", data.uploads);\n  console.log("Requests:", data.requests);\n  console.log("Memory:", data.system.memory);\n  console.log("Disk:", data.system.disk);\n  console.log("CPU:", data.system.cpu);\n};\n\nws.onerror = (err) => console.error("WebSocket error:", err);\nws.onclose = () => console.log("WebSocket closed");`}
       </CodeBlock>
 
       {/* Logout */}
@@ -102,7 +102,7 @@ function TypeScriptGuidePage() {
         10. Logout
       </h2>
       <CodeBlock title="Logout" language="typescript">
-        {`await api("/api/logout", { method: "POST" });\ntoken = "";\nconsole.log("Logged out");`}
+        {`await request("POST", "/auth/logout", { token: authToken });\nauthToken = undefined;\nconsole.log("Logged out");`}
       </CodeBlock>
     </DocPage>
   );
