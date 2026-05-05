@@ -158,8 +158,8 @@ function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
           >
-            A lightweight, self-hosted file sharing server with S3-compatible
-            API. Built with Go and React.
+            Turn any VPS or server into a private, self-hosted Google Drive + S3
+            in seconds.
           </motion.p>
 
           <motion.div
