@@ -212,6 +212,57 @@ function Landing() {
         </div>
       </section>
 
+      {/* Used By */}
+      <section className="py-24 px-4 border-t border-border/50">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            className="text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold font-mono uppercase tracking-tight mb-4">
+              Used By
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Trusted by teams and companies to manage their file
+              infrastructure.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap items-center justify-center gap-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {[
+              { name: "Ekilie", logo: "/used-by/ekilie.png" },
+              { name: "Akilisofterp", logo: "/used-by/akilisofterp.jpeg" },
+              { name: "Digiwakala", logo: "/used-by/digiwakala.png" },
+            ].map((company, i) => (
+              <motion.div
+                key={company.name}
+                className="flex flex-col items-center gap-3"
+                variants={fadeUp}
+                custom={i + 1}
+              >
+                <img
+                  src={company.logo}
+                  alt={company.name}
+                  className="h-16 w-16 object-contain rounded-lg"
+                />
+                <span className="font-mono text-sm text-muted-foreground">
+                  {company.name}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Grid */}
       <section className="py-24 px-4">
         <div className="max-w-6xl mx-auto">
